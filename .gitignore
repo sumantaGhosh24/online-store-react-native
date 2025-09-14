@@ -35,9 +35,6 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+nativewind-env.d.ts
 
 app-example
-
-# generated native folders
-/ios
-/android
