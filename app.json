@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "online-store",
+    "name": "Online Store",
     "slug": "online-store",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -27,12 +27,13 @@
       "package": "com.anonymous.onlinestore"
     },
     "web": {
-      "output": "static",
+      "output": "server",
       "favicon": "./assets/images/ios-light.png",
       "bundler": "metro"
     },
     "plugins": [
       "expo-router",
+      "expo-secure-store",
       [
         "expo-splash-screen",
         {
@@ -44,6 +45,14 @@
             "backgroundColor": "#000000",
             "image": "./assets/images/splash-icon-light.png"
           }
+        }
+      ],
+      [
+        "@sentry/react-native/expo",
+        {
+          "url": "https://sentry.io/",
+          "project": "react-native",
+          "organization": "sumanta-ghosh"
         }
       ]
     ],

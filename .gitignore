@@ -38,3 +38,13 @@ yarn-error.*
 nativewind-env.d.ts
 
 app-example
+
+.env
+
+backup
+
+*.txt
+
+TASKS.md
+
+.cursor/
