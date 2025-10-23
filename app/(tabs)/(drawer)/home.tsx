@@ -11,8 +11,8 @@ import {
   View,
 } from "react-native";
 
-import EmptyState from "@/components/empty-state";
-import HomeProduct from "@/components/home-product";
+import HomeProduct from "@/components/products/home-product";
+import EmptyState from "@/components/ui/empty-state";
 import {PAGINATION_MAX_COUNT} from "@/constant";
 import {api} from "@/convex/_generated/api";
 
@@ -48,7 +48,9 @@ const Home = () => {
   return (
     <FlatList
       data={results}
-      renderItem={({item}) => <HomeProduct {...item} loading={isLoading} />}
+      renderItem={({item, index}) => (
+        <HomeProduct {...item} loading={isLoading} index={index} />
+      )}
       keyExtractor={(item) => item._id.toString()}
       contentContainerStyle={{paddingBottom: 20}}
       ListHeaderComponent={() => {
@@ -62,7 +64,7 @@ const Home = () => {
             />
             <Picker
               selectedValue={category}
-              onValueChange={(itemValue) => setCategory(itemValue)}
+              onValueChange={setCategory}
               style={{backgroundColor: "white"}}
             >
               <Picker.Item label="All" value="" />

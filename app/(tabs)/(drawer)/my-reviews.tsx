@@ -7,8 +7,8 @@ import {
   TouchableOpacity,
 } from "react-native";
 
-import EmptyState from "@/components/empty-state";
-import Review from "@/components/review";
+import Review from "@/components/reviews/review";
+import EmptyState from "@/components/ui/empty-state";
 import {PAGINATION_MAX_COUNT} from "@/constant";
 import {api} from "@/convex/_generated/api";
 
@@ -26,7 +26,9 @@ const MyReviews = () => {
   return (
     <FlatList
       data={results}
-      renderItem={({item}) => <Review {...item} loading={isLoading} />}
+      renderItem={({item, index}) => (
+        <Review {...item} loading={isLoading} index={index} />
+      )}
       keyExtractor={(item) => item._id.toString()}
       contentContainerStyle={{paddingBottom: 20}}
       ListFooterComponent={() =>

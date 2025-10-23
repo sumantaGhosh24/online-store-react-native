@@ -1,46 +1,26 @@
-import {Ionicons} from "@expo/vector-icons";
-import {router, Stack, useLocalSearchParams} from "expo-router";
-import {useState} from "react";
-import {Text, TouchableOpacity, View} from "react-native";
+import {useLocalSearchParams} from "expo-router";
+import {useCallback, useState} from "react";
+import {View} from "react-native";
 import {SafeAreaView} from "react-native-safe-area-context";
 
-import AddProductImage from "@/components/add-product-image";
-import RemoveProductImage from "@/components/remove-product-image";
-import SegmentedControl from "@/components/segmented-control";
-import UpdateProduct from "@/components/update-product";
-import UpdateProductContent from "@/components/update-product-content";
-import {Colors} from "@/constant/colors";
+import AddProductImage from "@/components/products/add-product-image";
+import RemoveProductImage from "@/components/products/remove-product-image";
+import UpdateProduct from "@/components/products/update-product";
+import UpdateProductContent from "@/components/products/update-product-content";
+import SegmentedControl from "@/components/ui/segmented-control";
 
 const UpdateProductScreen = () => {
   const {id} = useLocalSearchParams();
 
   const [tabIndex, setTabIndex] = useState(0);
 
-  const handleTabsChange = (index: number) => {
+  const handleTabsChange = useCallback((index: number) => {
     setTabIndex(index);
-  };
+  }, []);
 
   return (
     <SafeAreaView style={{flex: 1}}>
       <View className="px-3" style={{flex: 1}}>
-        <Stack.Screen
-          options={{
-            headerShadowVisible: false,
-            headerStyle: {backgroundColor: Colors.background},
-            headerTitleStyle: {color: "white"},
-            headerLeft: () => (
-              <TouchableOpacity
-                className="items-center justify-center mr-5"
-                onPress={() => router.back()}
-              >
-                <Ionicons name="chevron-back" size={24} color="#fff" />
-              </TouchableOpacity>
-            ),
-          }}
-        />
-        <Text className="text-2xl font-bold mb-4 dark:text-white">
-          Update Product
-        </Text>
         <SegmentedControl
           tabs={[
             "Update Product",

@@ -7,8 +7,8 @@ import {
   TouchableOpacity,
 } from "react-native";
 
-import EmptyState from "@/components/empty-state";
-import Order from "@/components/order";
+import Order from "@/components/orders/order";
+import EmptyState from "@/components/ui/empty-state";
 import {PAGINATION_MAX_COUNT} from "@/constant";
 import {api} from "@/convex/_generated/api";
 
@@ -26,7 +26,9 @@ const MyOrders = () => {
   return (
     <FlatList
       data={results}
-      renderItem={({item}) => <Order {...item} loading={isLoading} />}
+      renderItem={({item, index}) => (
+        <Order {...item} loading={isLoading} index={index} />
+      )}
       keyExtractor={(item) => item._id.toString()}
       contentContainerStyle={{paddingBottom: 20}}
       ListFooterComponent={() =>

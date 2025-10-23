@@ -2,9 +2,11 @@ import {useAuth} from "@clerk/clerk-expo";
 import {Ionicons} from "@expo/vector-icons";
 import {useQuery} from "convex/react";
 import {useRouter} from "expo-router";
+import {useCallback} from "react";
 import {
   Alert,
   FlatList,
+  ListRenderItem,
   ScrollView,
   Text,
   ToastAndroid,
@@ -13,8 +15,15 @@ import {
   View,
 } from "react-native";
 
-import BoxedIcon from "@/components/boxed-icon";
+import BoxedIcon from "@/components/ui/boxed-icon";
 import {api} from "@/convex/_generated/api";
+
+type SettingItem = {
+  name: string;
+  icon: keyof typeof Ionicons.glyphMap;
+  backgroundColor: string;
+  onPress: () => void;
+};
 
 const Setting = () => {
   const user = useQuery(api.users.getUser);
@@ -25,7 +34,7 @@ const Setting = () => {
 
   const theme = useColorScheme();
 
-  const shortcuts = [
+  const shortcuts: SettingItem[] = [
     {
       name: "My Orders",
       icon: "bag",
@@ -52,7 +61,7 @@ const Setting = () => {
     },
   ];
 
-  const adminShortcuts = [
+  const adminShortcuts: SettingItem[] = [
     {
       name: "Manage Users",
       icon: "people",
@@ -85,7 +94,7 @@ const Setting = () => {
     },
   ];
 
-  const account = [
+  const account: SettingItem[] = [
     {
       name: "Sign Out",
       icon: "log-out",
@@ -114,7 +123,7 @@ const Setting = () => {
 
   const {signOut} = useAuth();
 
-  const handleSignOut = () => {
+  const handleSignOut = useCallback(() => {
     Alert.alert(
       "Sign Out",
       "Do you really want to sign out?",
@@ -128,7 +137,6 @@ const Setting = () => {
           style: "destructive",
           onPress: async () => {
             await signOut();
-
             ToastAndroid.showWithGravityAndOffset(
               "You have been signed out",
               ToastAndroid.LONG,
@@ -141,7 +149,30 @@ const Setting = () => {
       ],
       {cancelable: true}
     );
-  };
+  }, [signOut]);
+
+  const renderSettingItem: ListRenderItem<SettingItem> = useCallback(
+    ({item}) => (
+      <TouchableOpacity
+        className="flex-row items-center p-2.5 gap-2.5"
+        onPress={item.onPress}
+      >
+        <BoxedIcon name={item.icon} backgroundColor={item.backgroundColor} />
+        <Text className="text-xl flex-1 dark:text-white">{item.name}</Text>
+        <Ionicons
+          name="chevron-forward"
+          size={20}
+          color={theme === "dark" ? "white" : "black"}
+        />
+      </TouchableOpacity>
+    ),
+    [theme]
+  );
+
+  const ItemSeparatorComponent = useCallback(
+    () => <View className="ml-12 border-b-[#bbb] border-b-2" />,
+    []
+  );
 
   return (
     <View style={{flex: 1}}>
@@ -153,28 +184,9 @@ const Setting = () => {
           <FlatList
             data={shortcuts}
             scrollEnabled={false}
-            ItemSeparatorComponent={() => (
-              <View className="ml-12 border-b-[#bbb] border-b-2" />
-            )}
-            renderItem={({item}) => (
-              <TouchableOpacity
-                className="flex-row items-center p-2.5 gap-2.5"
-                onPress={item.onPress}
-              >
-                <BoxedIcon
-                  name={item.icon}
-                  backgroundColor={item.backgroundColor}
-                />
-                <Text className="text-xl flex-1 dark:text-white">
-                  {item.name}
-                </Text>
-                <Ionicons
-                  name="chevron-forward"
-                  size={20}
-                  color={theme === "dark" ? "white" : "black"}
-                />
-              </TouchableOpacity>
-            )}
+            ItemSeparatorComponent={ItemSeparatorComponent}
+            renderItem={renderSettingItem}
+            keyExtractor={(item) => item.name}
           />
         </View>
         {isAdmin && (
@@ -182,28 +194,9 @@ const Setting = () => {
             <FlatList
               data={adminShortcuts}
               scrollEnabled={false}
-              ItemSeparatorComponent={() => (
-                <View className="ml-12 border-b-[#bbb] border-b-2" />
-              )}
-              renderItem={({item}) => (
-                <TouchableOpacity
-                  className="flex-row items-center p-2.5 gap-2.5"
-                  onPress={item.onPress}
-                >
-                  <BoxedIcon
-                    name={item.icon}
-                    backgroundColor={item.backgroundColor}
-                  />
-                  <Text className="text-xl flex-1 dark:text-white">
-                    {item.name}
-                  </Text>
-                  <Ionicons
-                    name="chevron-forward"
-                    size={20}
-                    color={theme === "dark" ? "white" : "black"}
-                  />
-                </TouchableOpacity>
-              )}
+              ItemSeparatorComponent={ItemSeparatorComponent}
+              renderItem={renderSettingItem}
+              keyExtractor={(item) => item.name}
             />
           </View>
         )}
@@ -211,28 +204,9 @@ const Setting = () => {
           <FlatList
             data={account}
             scrollEnabled={false}
-            ItemSeparatorComponent={() => (
-              <View className="ml-12 border-b-[#bbb] border-b-2" />
-            )}
-            renderItem={({item}) => (
-              <TouchableOpacity
-                className="flex-row items-center p-2.5 gap-2.5"
-                onPress={item.onPress}
-              >
-                <BoxedIcon
-                  name={item.icon}
-                  backgroundColor={item.backgroundColor}
-                />
-                <Text className="text-xl flex-1 dark:text-white">
-                  {item.name}
-                </Text>
-                <Ionicons
-                  name="chevron-forward"
-                  size={20}
-                  color={theme === "dark" ? "white" : "black"}
-                />
-              </TouchableOpacity>
-            )}
+            ItemSeparatorComponent={ItemSeparatorComponent}
+            renderItem={renderSettingItem}
+            keyExtractor={(item) => item.name}
           />
         </View>
       </ScrollView>

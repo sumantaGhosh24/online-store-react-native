@@ -1,30 +1,41 @@
-import {Ionicons} from "@expo/vector-icons";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useMutation} from "convex/react";
-import {router, Stack} from "expo-router";
-import {useState} from "react";
-import {Controller, useForm} from "react-hook-form";
+import {useCallback, useState} from "react";
+import {useForm} from "react-hook-form";
 import {
-  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   Text,
-  TextInput,
   ToastAndroid,
-  TouchableOpacity,
   View,
 } from "react-native";
 import {z} from "zod";
 
-import {Colors} from "@/constant/colors";
+import AnimatedButton from "@/components/ui/animated-button";
+import AnimatedInput from "@/components/ui/animated-input";
 import {api} from "@/convex/_generated/api";
 
-const createCouponSchema = z.object({
-  name: z.string().min(2).max(50),
-  code: z.string().min(2).max(15),
-  discount: z.string().min(1),
-  minCartPrice: z.string().min(1),
-});
+const createCouponSchema = z
+  .object({
+    name: z.string().min(2).max(50),
+    code: z.string().min(2).max(15),
+    discount: z
+      .string()
+      .min(1)
+      .refine((val) => {
+        return !isNaN(parseInt(val));
+      }, "Discount must be a number"),
+    minCartPrice: z
+      .string()
+      .min(1)
+      .refine((val) => {
+        return !isNaN(parseInt(val));
+      }, "Minimum cart price must be a number"),
+  })
+  .refine((data) => parseInt(data.discount) <= parseInt(data.minCartPrice), {
+    message: "Discount cannot be greater than minimum cart price",
+    path: ["discount"],
+  });
 type CreateCouponForm = z.infer<typeof createCouponSchema>;
 
 const CreateCoupon = () => {
@@ -43,189 +54,99 @@ const CreateCoupon = () => {
     },
   });
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
 
   const createCoupon = useMutation(api.coupons.createCoupon);
 
-  const onSubmit = async (data: CreateCouponForm) => {
-    if (isNaN(parseInt(data.discount)))
-      return ToastAndroid.showWithGravityAndOffset(
-        "Discount must be a number",
-        ToastAndroid.LONG,
-        ToastAndroid.BOTTOM,
-        25,
-        50
-      );
-    if (isNaN(parseInt(data.minCartPrice)))
-      return ToastAndroid.showWithGravityAndOffset(
-        "Minimum cart price must be a number",
-        ToastAndroid.LONG,
-        ToastAndroid.BOTTOM,
-        25,
-        50
-      );
-    if (parseInt(data.discount) > parseInt(data.minCartPrice))
-      return ToastAndroid.showWithGravityAndOffset(
-        "Discount cannot be greater than minimum cart price",
-        ToastAndroid.LONG,
-        ToastAndroid.BOTTOM,
-        25,
-        50
-      );
+  const onSubmit = useCallback(
+    async (data: CreateCouponForm) => {
+      setLoading("loading");
 
-    try {
-      setLoading(true);
+      try {
+        await createCoupon({
+          name: data.name.toLowerCase(),
+          code: data.code.toLowerCase(),
+          discount: parseInt(data.discount),
+          minCartPrice: parseInt(data.minCartPrice),
+        });
 
-      await createCoupon({
-        name: data.name.toLowerCase(),
-        code: data.code.toLowerCase(),
-        discount: parseInt(data.discount),
-        minCartPrice: parseInt(data.minCartPrice),
-      });
+        reset();
 
-      reset();
+        setLoading("success");
 
-      ToastAndroid.showWithGravityAndOffset(
-        "Coupon created successfully",
-        ToastAndroid.SHORT,
-        ToastAndroid.BOTTOM,
-        0,
-        100
-      );
-    } catch (error: any) {
-      ToastAndroid.showWithGravityAndOffset(
-        error.message,
-        ToastAndroid.SHORT,
-        ToastAndroid.BOTTOM,
-        0,
-        100
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+        ToastAndroid.showWithGravityAndOffset(
+          "Coupon created successfully",
+          ToastAndroid.SHORT,
+          ToastAndroid.BOTTOM,
+          0,
+          100
+        );
+      } catch (error: any) {
+        setLoading("error");
+        ToastAndroid.showWithGravityAndOffset(
+          error.message,
+          ToastAndroid.SHORT,
+          ToastAndroid.BOTTOM,
+          0,
+          100
+        );
+      }
+    },
+    [createCoupon, reset]
+  );
 
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       className="px-3 mt-5"
     >
-      <Stack.Screen
-        options={{
-          headerShadowVisible: false,
-          headerStyle: {backgroundColor: Colors.background},
-          headerTitleStyle: {color: "white"},
-          headerLeft: () => (
-            <TouchableOpacity
-              className="items-center justify-center mr-5"
-              onPress={() => router.back()}
-            >
-              <Ionicons name="chevron-back" size={24} color="#fff" />
-            </TouchableOpacity>
-          ),
-        }}
-      />
       <View>
-        <Text className="text-2xl font-bold mb-2 dark:text-white">
+        <Text className="text-2xl font-bold mb-5 dark:text-white">
           Create Coupon
         </Text>
-        <Text className="text-lg font-bold mt-3 mb-1.5 dark:text-white">
-          Coupon name
-        </Text>
-        <Controller
+        <AnimatedInput
           control={control}
           name="name"
-          render={({field: {onChange, onBlur, value}}) => (
-            <TextInput
-              className="border border-gray-300 rounded-md px-3 py-2 mb-2 bg-white placeholder:text-black dark:bg-gray-700 dark:border-0 dark:placeholder:text-white dark:text-white"
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              placeholder="Enter coupon name"
-              keyboardType="default"
-              autoCapitalize="none"
-            />
-          )}
+          label="Coupon Name"
+          keyboardType="default"
+          autoCapitalize="none"
+          error={errors.name?.message}
+          setLoading={setLoading}
         />
-        {errors.name && (
-          <Text className="text-red-500 mb-2">{errors.name.message}</Text>
-        )}
-        <Text className="text-lg font-bold mt-3 mb-1.5 dark:text-white">
-          Coupon code
-        </Text>
-        <Controller
+        <AnimatedInput
           control={control}
           name="code"
-          render={({field: {onChange, onBlur, value}}) => (
-            <TextInput
-              className="border border-gray-300 rounded-md px-3 py-2 mb-2 bg-white placeholder:text-black dark:bg-gray-700 dark:border-0 dark:placeholder:text-white dark:text-white"
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              placeholder="Enter coupon code"
-              keyboardType="default"
-              autoCapitalize="none"
-            />
-          )}
+          label="Coupon Code"
+          keyboardType="default"
+          autoCapitalize="words"
+          error={errors.code?.message}
+          setLoading={setLoading}
         />
-        {errors.code && (
-          <Text className="text-red-500 mb-2">{errors.code.message}</Text>
-        )}
-        <Text className="text-lg font-bold mt-3 mb-1.5 dark:text-white">
-          Coupon discount
-        </Text>
-        <Controller
+        <AnimatedInput
           control={control}
           name="discount"
-          render={({field: {onChange, onBlur, value}}) => (
-            <TextInput
-              className="border border-gray-300 rounded-md px-3 py-2 mb-2 bg-white placeholder:text-black dark:bg-gray-700 dark:border-0 dark:placeholder:text-white dark:text-white"
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              placeholder="Enter coupon discount"
-              keyboardType="number-pad"
-            />
-          )}
+          label="Coupon Discount"
+          keyboardType="numeric"
+          autoCapitalize="none"
+          error={errors.discount?.message}
+          setLoading={setLoading}
         />
-        {errors.discount && (
-          <Text className="text-red-500 mb-2">{errors.discount.message}</Text>
-        )}
-        <Text className="text-lg font-bold mt-3 mb-1.5 dark:text-white">
-          Coupon minimum cart price
-        </Text>
-        <Controller
+        <AnimatedInput
           control={control}
           name="minCartPrice"
-          render={({field: {onChange, onBlur, value}}) => (
-            <TextInput
-              className="border border-gray-300 rounded-md px-3 py-2 mb-2 bg-white placeholder:text-black dark:bg-gray-700 dark:border-0 dark:placeholder:text-white dark:text-white"
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              placeholder="Enter coupon minimum cart price"
-              keyboardType="number-pad"
-            />
-          )}
+          label="Coupon Cart Minimum Price"
+          keyboardType="numeric"
+          autoCapitalize="none"
+          error={errors.minCartPrice?.message}
+          setLoading={setLoading}
         />
-        {errors.minCartPrice && (
-          <Text className="text-red-500 mb-2">
-            {errors.minCartPrice.message}
-          </Text>
-        )}
-        <TouchableOpacity
-          className="bg-primary rounded-full py-3 items-center my-5 disabled:bg-blue-300"
+        <AnimatedButton
+          title="Create Coupon"
+          state={loading}
           onPress={handleSubmit(onSubmit)}
-          disabled={loading}
-        >
-          {loading ? (
-            <ActivityIndicator color="white" />
-          ) : (
-            <Text className="text-lg font-medium text-white">
-              Create Coupon
-            </Text>
-          )}
-        </TouchableOpacity>
+        />
       </View>
     </KeyboardAvoidingView>
   );

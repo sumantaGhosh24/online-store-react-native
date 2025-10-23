@@ -11,8 +11,8 @@ import {
   View,
 } from "react-native";
 
-import EmptyState from "@/components/empty-state";
-import Product from "@/components/product";
+import Product from "@/components/products/product";
+import EmptyState from "@/components/ui/empty-state";
 import {PAGINATION_MAX_COUNT} from "@/constant";
 import {api} from "@/convex/_generated/api";
 
@@ -48,7 +48,9 @@ const Products = () => {
   return (
     <FlatList
       data={results}
-      renderItem={({item}) => <Product {...item} loading={isLoading} />}
+      renderItem={({item, index}) => (
+        <Product {...item} loading={isLoading} index={index} />
+      )}
       keyExtractor={(item) => item._id.toString()}
       contentContainerStyle={{paddingBottom: 20}}
       ListHeaderComponent={() => {

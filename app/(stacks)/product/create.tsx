@@ -1,11 +1,9 @@
-import {Ionicons} from "@expo/vector-icons";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {Picker} from "@react-native-picker/picker";
 import {useMutation, useQuery} from "convex/react";
 import * as ImagePicker from "expo-image-picker";
-import {router, Stack} from "expo-router";
-import {useState} from "react";
-import {Controller, useForm} from "react-hook-form";
+import {useCallback, useMemo, useState} from "react";
+import {useForm} from "react-hook-form";
 import {
   ActivityIndicator,
   Image,
@@ -13,22 +11,34 @@ import {
   Platform,
   ScrollView,
   Text,
-  TextInput,
   ToastAndroid,
   TouchableOpacity,
   View,
 } from "react-native";
 import {z} from "zod";
 
-import {Colors} from "@/constant/colors";
+import AnimatedButton from "@/components/ui/animated-button";
+import AnimatedInput from "@/components/ui/animated-input";
 import {api} from "@/convex/_generated/api";
 import {Id} from "@/convex/_generated/dataModel";
 
 const createProductSchema = z.object({
   title: z.string().min(2).max(50),
   description: z.string().min(2).max(200),
-  price: z.string().min(1),
-  stock: z.string().min(1),
+  price: z
+    .string()
+    .min(1)
+    .refine((val) => {
+      const num = parseInt(val);
+      return !isNaN(num);
+    }, "Price must be a number"),
+  stock: z
+    .string()
+    .min(1)
+    .refine((val) => {
+      const num = parseInt(val);
+      return !isNaN(num);
+    }, "Stock must be a number"),
 });
 type CreateProductForm = z.infer<typeof createProductSchema>;
 
@@ -50,14 +60,26 @@ const CreateProduct = () => {
 
   const [image, setImage] = useState<any>();
   const [category, setCategory] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
 
   const categories = useQuery(api.categories.getCategories);
+
+  const categoryItems = useMemo(() => {
+    return categories?.map((category) => (
+      <Picker.Item
+        label={category.name}
+        value={category._id}
+        key={category._id}
+      />
+    ));
+  }, [categories]);
 
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
   const createProduct = useMutation(api.products.createProduct);
 
-  const selectImage = async (source: "camera" | "library") => {
+  const selectImage = useCallback(async (source: "camera" | "library") => {
     const options: ImagePicker.ImagePickerOptions = {
       allowsEditing: true,
       aspect: [1, 1],
@@ -102,90 +124,76 @@ const CreateProduct = () => {
     if (!result.canceled) {
       setImage(result.assets[0] as any);
     }
-  };
+  }, []);
 
-  const onSubmit = async (data: CreateProductForm) => {
-    if (!image)
-      return ToastAndroid.showWithGravityAndOffset(
-        "Select an image first!",
-        ToastAndroid.LONG,
-        ToastAndroid.BOTTOM,
-        25,
-        50
-      );
-    if (category === "")
-      return ToastAndroid.showWithGravityAndOffset(
-        "Select a category first!",
-        ToastAndroid.LONG,
-        ToastAndroid.BOTTOM,
-        25,
-        50
-      );
+  const onSubmit = useCallback(
+    async (data: CreateProductForm) => {
+      if (!image)
+        return ToastAndroid.showWithGravityAndOffset(
+          "Select an image first!",
+          ToastAndroid.LONG,
+          ToastAndroid.BOTTOM,
+          25,
+          50
+        );
+      if (category === "")
+        return ToastAndroid.showWithGravityAndOffset(
+          "Select a category first!",
+          ToastAndroid.LONG,
+          ToastAndroid.BOTTOM,
+          25,
+          50
+        );
 
-    if (isNaN(parseInt(data.price)))
-      return ToastAndroid.showWithGravityAndOffset(
-        "Price must be a number",
-        ToastAndroid.LONG,
-        ToastAndroid.BOTTOM,
-        25,
-        50
-      );
-    if (isNaN(parseInt(data.stock)))
-      return ToastAndroid.showWithGravityAndOffset(
-        "Stock must be a number",
-        ToastAndroid.LONG,
-        ToastAndroid.BOTTOM,
-        25,
-        50
-      );
+      setLoading("loading");
+      try {
+        const url = await generateUploadUrl();
 
-    try {
-      setLoading(true);
+        const response = await fetch(image.uri);
+        const blob = await response.blob();
 
-      const url = await generateUploadUrl();
+        const result = await fetch(url, {
+          method: "POST",
+          headers: image.type ? {"Content-Type": `${image.mimeType}`} : {},
+          body: blob,
+        });
+        const {storageId} = await result.json();
 
-      const response = await fetch(image.uri);
-      const blob = await response.blob();
+        await createProduct({
+          title: data.title,
+          description: data.description,
+          image: storageId,
+          category: category as Id<"categories">,
+          price: parseInt(data.price),
+          stock: parseInt(data.stock),
+        });
 
-      const result = await fetch(url, {
-        method: "POST",
-        headers: image.type ? {"Content-Type": `${image.mimeType}`} : {},
-        body: blob,
-      });
-      const {storageId} = await result.json();
+        setLoading("success");
 
-      await createProduct({
-        title: data.title,
-        description: data.description,
-        image: storageId,
-        category: category as Id<"categories">,
-        price: parseInt(data.price),
-        stock: parseInt(data.stock),
-      });
+        reset();
+        setImage(null);
+        setCategory("");
 
-      reset();
-      setImage(null);
-      setCategory("");
-
-      ToastAndroid.showWithGravityAndOffset(
-        "Product created successfully",
-        ToastAndroid.SHORT,
-        ToastAndroid.BOTTOM,
-        0,
-        100
-      );
-    } catch (error: any) {
-      ToastAndroid.showWithGravityAndOffset(
-        error.message,
-        ToastAndroid.SHORT,
-        ToastAndroid.BOTTOM,
-        0,
-        100
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+        ToastAndroid.showWithGravityAndOffset(
+          "Product created successfully",
+          ToastAndroid.SHORT,
+          ToastAndroid.BOTTOM,
+          0,
+          100
+        );
+      } catch (error: any) {
+        setLoading("error");
+        ToastAndroid.showWithGravityAndOffset(
+          error.message,
+          ToastAndroid.SHORT,
+          ToastAndroid.BOTTOM,
+          0,
+          100
+        );
+      }
+    },
+    [image, category, generateUploadUrl, createProduct, reset]
+  );
 
   return (
     <KeyboardAvoidingView
@@ -193,23 +201,8 @@ const CreateProduct = () => {
       className="px-3 mt-5"
       style={{flex: 1}}
     >
-      <Stack.Screen
-        options={{
-          headerShadowVisible: false,
-          headerStyle: {backgroundColor: Colors.background},
-          headerTitleStyle: {color: "white"},
-          headerLeft: () => (
-            <TouchableOpacity
-              className="items-center justify-center mr-5"
-              onPress={() => router.back()}
-            >
-              <Ionicons name="chevron-back" size={24} color="#fff" />
-            </TouchableOpacity>
-          ),
-        }}
-      />
       <ScrollView>
-        <Text className="text-2xl font-bold mb-2 dark:text-white">
+        <Text className="text-2xl font-bold mb-5 dark:text-white">
           Create Product
         </Text>
         {image && (
@@ -224,9 +217,9 @@ const CreateProduct = () => {
           <TouchableOpacity
             className="bg-primary rounded-full p-3 items-center mb-4 disabled:bg-blue-300 w-1/3"
             onPress={() => selectImage("library")}
-            disabled={loading}
+            disabled={loading === "loading"}
           >
-            {loading ? (
+            {loading === "loading" ? (
               <ActivityIndicator color="white" />
             ) : (
               <Text className="text-lg font-medium text-white">Open Media</Text>
@@ -235,9 +228,9 @@ const CreateProduct = () => {
           <TouchableOpacity
             className="bg-primary rounded-full p-3 items-center mb-4 disabled:bg-blue-300 w-1/3"
             onPress={() => selectImage("camera")}
-            disabled={loading}
+            disabled={loading === "loading"}
           >
-            {loading ? (
+            {loading === "loading" ? (
               <ActivityIndicator color="white" />
             ) : (
               <Text className="text-lg font-medium text-white">
@@ -246,93 +239,45 @@ const CreateProduct = () => {
             )}
           </TouchableOpacity>
         </View>
-        <Text className="text-lg font-bold mt-3 mb-1.5 dark:text-white">
-          Product title
-        </Text>
-        <Controller
+        <AnimatedInput
           control={control}
           name="title"
-          render={({field: {onChange, onBlur, value}}) => (
-            <TextInput
-              className="border border-gray-300 rounded-md px-3 py-2 mb-2 bg-white placeholder:text-black dark:bg-gray-700 dark:border-0 dark:placeholder:text-white dark:text-white"
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              placeholder="Enter product title"
-              keyboardType="default"
-              autoCapitalize="none"
-            />
-          )}
+          label="Product Title"
+          keyboardType="default"
+          autoCapitalize="none"
+          error={errors.title?.message}
+          setLoading={setLoading}
         />
-        {errors.title && (
-          <Text className="text-red-500 mb-2">{errors.title.message}</Text>
-        )}
-        <Text className="text-lg font-bold mt-3 mb-1.5 dark:text-white">
-          Product description
-        </Text>
-        <Controller
+        <AnimatedInput
           control={control}
           name="description"
-          render={({field: {onChange, onBlur, value}}) => (
-            <TextInput
-              className="border border-gray-300 rounded-md px-3 py-2 mb-2 bg-white placeholder:text-black dark:bg-gray-700 dark:border-0 dark:placeholder:text-white dark:text-white h-[150px]"
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              placeholder="Enter product description"
-              keyboardType="default"
-              autoCapitalize="none"
-              multiline
-              numberOfLines={10}
-              textAlignVertical="top"
-            />
-          )}
+          label="Product Description"
+          keyboardType="default"
+          autoCapitalize="none"
+          multiline
+          numberOfLines={10}
+          textAlignVertical="top"
+          error={errors.title?.message}
+          setLoading={setLoading}
         />
-        {errors.description && (
-          <Text className="text-red-500 mb-2">
-            {errors.description.message}
-          </Text>
-        )}
-        <Text className="text-lg font-bold mt-3 mb-1.5 dark:text-white">
-          Product price
-        </Text>
-        <Controller
+        <AnimatedInput
           control={control}
           name="price"
-          render={({field: {onChange, onBlur, value}}) => (
-            <TextInput
-              className="border border-gray-300 rounded-md px-3 py-2 mb-2 bg-white placeholder:text-black dark:bg-gray-700 dark:border-0 dark:placeholder:text-white dark:text-white"
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              placeholder="Enter product price"
-              keyboardType="number-pad"
-            />
-          )}
+          label="Product Price"
+          keyboardType="numeric"
+          autoCapitalize="none"
+          error={errors.price?.message}
+          setLoading={setLoading}
         />
-        {errors.price && (
-          <Text className="text-red-500 mb-2">{errors.price.message}</Text>
-        )}
-        <Text className="text-lg font-bold mt-3 mb-1.5 dark:text-white">
-          Product stock
-        </Text>
-        <Controller
+        <AnimatedInput
           control={control}
           name="stock"
-          render={({field: {onChange, onBlur, value}}) => (
-            <TextInput
-              className="border border-gray-300 rounded-md px-3 py-2 mb-2 bg-white placeholder:text-black dark:bg-gray-700 dark:border-0 dark:placeholder:text-white dark:text-white"
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              placeholder="Enter product stock"
-              keyboardType="number-pad"
-            />
-          )}
+          label="Product Stock"
+          keyboardType="numeric"
+          autoCapitalize="none"
+          error={errors.stock?.message}
+          setLoading={setLoading}
         />
-        {errors.stock && (
-          <Text className="text-red-500 mb-2">{errors.stock.message}</Text>
-        )}
         <Text className="text-lg font-bold mt-3 mb-1.5 dark:text-white">
           Product category
         </Text>
@@ -341,27 +286,13 @@ const CreateProduct = () => {
           onValueChange={(itemValue) => setCategory(itemValue)}
         >
           <Picker.Item label="All" value="" />
-          {categories?.map((category) => (
-            <Picker.Item
-              label={category.name}
-              value={category._id}
-              key={category._id}
-            />
-          ))}
+          {categoryItems}
         </Picker>
-        <TouchableOpacity
-          className="bg-primary rounded-full py-3 items-center my-5 disabled:bg-blue-300"
+        <AnimatedButton
+          title="Create Product"
+          state={loading}
           onPress={handleSubmit(onSubmit)}
-          disabled={loading}
-        >
-          {loading ? (
-            <ActivityIndicator color="white" />
-          ) : (
-            <Text className="text-lg font-medium text-white">
-              Create Product
-            </Text>
-          )}
-        </TouchableOpacity>
+        />
       </ScrollView>
     </KeyboardAvoidingView>
   );

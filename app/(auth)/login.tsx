@@ -1,19 +1,20 @@
 import {useSignIn} from "@clerk/clerk-expo";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {Link, useRouter} from "expo-router";
-import {useState} from "react";
-import {Controller, useForm} from "react-hook-form";
+import {useCallback, useState} from "react";
+import {useForm} from "react-hook-form";
 import {
-  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   Text,
-  TextInput,
   ToastAndroid,
   TouchableOpacity,
   View,
 } from "react-native";
 import {z} from "zod";
+
+import AnimatedButton from "@/components/ui/animated-button";
+import AnimatedInput from "@/components/ui/animated-input";
 
 const signInSchema = z.object({
   email: z.email().min(1, "Email is required"),
@@ -37,96 +38,76 @@ const Login = () => {
   });
 
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
 
   const {signIn, setActive, isLoaded} = useSignIn();
 
-  const onSubmit = async (data: SignInForm) => {
-    if (!isLoaded) return;
+  const onSubmit = useCallback(
+    async (data: SignInForm) => {
+      if (!isLoaded) return;
 
-    try {
-      setLoading(true);
+      setLoading("loading");
+      try {
+        const signInAttempt = await signIn.create({
+          identifier: data.email,
+          password: data.password,
+        });
 
-      const signInAttempt = await signIn.create({
-        identifier: data.email,
-        password: data.password,
-      });
-
-      if (signInAttempt.status === "complete") {
-        await setActive({session: signInAttempt.createdSessionId});
-        router.replace("/home");
-      } else {
+        if (signInAttempt.status === "complete") {
+          await setActive({session: signInAttempt.createdSessionId});
+          setLoading("success");
+          router.replace("/home");
+        } else {
+          setLoading("error");
+          ToastAndroid.showWithGravityAndOffset(
+            JSON.stringify(signInAttempt, null, 2),
+            ToastAndroid.LONG,
+            ToastAndroid.BOTTOM,
+            25,
+            50
+          );
+        }
+      } catch (error: any) {
+        setLoading("error");
         ToastAndroid.showWithGravityAndOffset(
-          JSON.stringify(signInAttempt, null, 2),
+          error.message,
           ToastAndroid.LONG,
           ToastAndroid.BOTTOM,
           25,
           50
         );
       }
-    } catch (error: any) {
-      ToastAndroid.showWithGravityAndOffset(
-        error.message,
-        ToastAndroid.LONG,
-        ToastAndroid.BOTTOM,
-        25,
-        50
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [isLoaded, router, setActive, signIn]
+  );
 
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <View className="p-4">
-        <Text className="text-2xl font-bold mb-2 dark:text-white">
+        <Text className="text-2xl font-bold mb-5 dark:text-white">
           Sign in user
         </Text>
-        <Text className="text-base font-medium mb-2 dark:text-white">
-          Enter email address
-        </Text>
-        <Controller
+        <AnimatedInput
           control={control}
           name="email"
-          render={({field: {onChange, onBlur, value}}) => (
-            <TextInput
-              className="border border-gray-300 rounded-md px-3 py-2 mb-2 bg-white placeholder:text-black dark:bg-gray-700 dark:border-0 dark:placeholder:text-white dark:text-white"
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              placeholder="Enter email address"
-              keyboardType="email-address"
-              autoCapitalize="none"
-            />
-          )}
+          label="Email Address"
+          keyboardType="email-address"
+          autoCapitalize="none"
+          error={errors.email?.message}
+          setLoading={setLoading}
         />
-        {errors.email && (
-          <Text className="text-red-500 mb-2">{errors.email.message}</Text>
-        )}
-        <Controller
+        <AnimatedInput
           control={control}
           name="password"
-          render={({field: {onChange, onBlur, value}}) => (
-            <TextInput
-              className="border border-gray-300 rounded-md px-3 py-2 mb-2 bg-white placeholder:text-black dark:bg-gray-700 dark:border-0 dark:placeholder:text-white dark:text-white"
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              placeholder="Enter password"
-              secureTextEntry={!showPassword}
-              autoCapitalize="none"
-              autoCorrect={false}
-              textContentType="password"
-              accessibilityLabel="password"
-            />
-          )}
+          label="Password"
+          secureTextEntry={!showPassword}
+          error={errors.password?.message}
+          setLoading={setLoading}
         />
-        {errors.password && (
-          <Text className="text-red-500 mb-2">{errors.password.message}</Text>
-        )}
         <TouchableOpacity
           className="flex-row items-center mb-4"
           onPress={() => setShowPassword((prev) => !prev)}
@@ -143,17 +124,11 @@ const Login = () => {
           </View>
           <Text className="text-base dark:text-white">Show password</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          className="bg-primary rounded-full py-3 items-center mb-4 disabled:bg-blue-300"
+        <AnimatedButton
+          title="Sign In"
+          state={loading}
           onPress={handleSubmit(onSubmit)}
-          disabled={loading}
-        >
-          {loading ? (
-            <ActivityIndicator color="white" />
-          ) : (
-            <Text className="text-lg font-medium text-white">Sign In</Text>
-          )}
-        </TouchableOpacity>
+        />
         <View className="flex-row justify-center mt-4">
           <Text className="text-gray-600 dark:text-white">
             Already have an account?{" "}

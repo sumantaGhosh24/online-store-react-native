@@ -1,13 +1,11 @@
-import {Ionicons} from "@expo/vector-icons";
 import {useStripe} from "@stripe/stripe-react-native";
 import {useMutation, useQuery} from "convex/react";
 import * as Linking from "expo-linking";
-import {router, Stack} from "expo-router";
+import {router} from "expo-router";
 import {useEffect, useState} from "react";
 import {Text, ToastAndroid, TouchableOpacity, View} from "react-native";
 
-import CartCoupon from "@/components/cart-coupon";
-import {Colors} from "@/constant/colors";
+import CartCoupon from "@/components/cart/cart-coupon";
 import {api} from "@/convex/_generated/api";
 import {useCartStore} from "@/store/cart";
 
@@ -250,21 +248,6 @@ const Checkout = () => {
 
   return (
     <View>
-      <Stack.Screen
-        options={{
-          headerShadowVisible: false,
-          headerStyle: {backgroundColor: Colors.background},
-          headerTitleStyle: {color: "white"},
-          headerLeft: () => (
-            <TouchableOpacity
-              className="items-center justify-center mr-5"
-              onPress={() => router.back()}
-            >
-              <Ionicons name="chevron-back" size={24} color="#fff" />
-            </TouchableOpacity>
-          ),
-        }}
-      />
       {!!products.length && (
         <>
           {coupon && <CartCoupon setDiscount={setDiscount} checkout={true} />}

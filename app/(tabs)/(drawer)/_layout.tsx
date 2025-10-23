@@ -10,7 +10,7 @@ import {Drawer} from "expo-router/drawer";
 import {Alert, ToastAndroid} from "react-native";
 import {GestureHandlerRootView} from "react-native-gesture-handler";
 
-import DropdownPlus from "@/components/dropdown-plus";
+import DropdownPlus from "@/components/ui/dropdown-plus";
 import {Colors} from "@/constant/colors";
 import {api} from "@/convex/_generated/api";
 

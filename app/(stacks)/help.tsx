@@ -1,9 +1,6 @@
-import {Ionicons} from "@expo/vector-icons";
-import {router, Stack} from "expo-router";
-import {ScrollView, TouchableOpacity, View} from "react-native";
+import {ScrollView, View} from "react-native";
 
-import AccordionItem from "@/components/accordion-item";
-import {Colors} from "@/constant/colors";
+import AccordionItem from "@/components/ui/accordion-item";
 
 const faqData = [
   {
@@ -34,33 +31,16 @@ const faqData = [
 
 const Help = () => {
   return (
-    <>
-      <Stack.Screen
-        options={{
-          headerShadowVisible: false,
-          headerStyle: {backgroundColor: Colors.background},
-          headerTitleStyle: {color: "white"},
-          headerLeft: () => (
-            <TouchableOpacity
-              className="items-center justify-center mr-5"
-              onPress={() => router.back()}
-            >
-              <Ionicons name="chevron-back" size={24} color="#fff" />
-            </TouchableOpacity>
-          ),
-        }}
-      />
-      <ScrollView className="p-3">
-        {faqData.map((item) => (
-          <AccordionItem
-            key={item.id}
-            title={item.question}
-            content={item.answer}
-          />
-        ))}
-        <View className="h-20" />
-      </ScrollView>
-    </>
+    <ScrollView className="p-3" removeClippedSubviews={true}>
+      {faqData.map((item) => (
+        <AccordionItem
+          key={item.id}
+          title={item.question}
+          content={item.answer}
+        />
+      ))}
+      <View className="h-20" />
+    </ScrollView>
   );
 };
 

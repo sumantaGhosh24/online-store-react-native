@@ -1,9 +1,10 @@
 import {ScrollView, Text, View} from "react-native";
 
-import FinancialSummaryChart from "@/components/financial-summary-chart";
-import ProductSummaryCharts from "@/components/product-summary-chart";
-import ReviewSummaryChart from "@/components/review-summary-chart";
-import UserSummaryChart from "@/components/user-summary-chart";
+import FinancialSummaryChart from "@/components/dashboard/financial-summary-chart";
+import ProductSummaryCharts from "@/components/dashboard/product-summary-chart";
+import ReviewSummaryChart from "@/components/dashboard/review-summary-chart";
+import UserSummaryChart from "@/components/dashboard/user-summary-chart";
+import AnimatedCard from "@/components/ui/animated-card";
 
 const Dashboard = () => {
   return (
@@ -14,10 +15,18 @@ const Dashboard = () => {
       <Text className="text-lg mb-[20] dark:text-white">
         Visualizing data from database.
       </Text>
-      <UserSummaryChart />
-      <ProductSummaryCharts />
-      <ReviewSummaryChart />
-      <FinancialSummaryChart />
+      <AnimatedCard>
+        <UserSummaryChart />
+      </AnimatedCard>
+      <AnimatedCard>
+        <ProductSummaryCharts />
+      </AnimatedCard>
+      <AnimatedCard>
+        <ReviewSummaryChart />
+      </AnimatedCard>
+      <AnimatedCard>
+        <FinancialSummaryChart />
+      </AnimatedCard>
       <View className="h-[50]" />
     </ScrollView>
   );

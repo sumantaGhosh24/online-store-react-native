@@ -3,8 +3,8 @@ import {router, Stack} from "expo-router";
 import {useState} from "react";
 import {TouchableOpacity, View} from "react-native";
 
-import NewPassword from "@/components/new-password";
-import ResetEmail from "@/components/reset-email";
+import NewPassword from "@/components/auth/new-password";
+import ResetEmail from "@/components/auth/reset-email";
 import {Colors} from "@/constant/colors";
 
 const PwReset = () => {

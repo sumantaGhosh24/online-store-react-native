@@ -7,8 +7,8 @@ import {
   TouchableOpacity,
 } from "react-native";
 
-import Coupon from "@/components/coupon";
-import EmptyState from "@/components/empty-state";
+import Coupon from "@/components/coupons/coupon";
+import EmptyState from "@/components/ui/empty-state";
 import {PAGINATION_MAX_COUNT} from "@/constant";
 import {api} from "@/convex/_generated/api";
 
@@ -24,7 +24,9 @@ const Coupons = () => {
   return (
     <FlatList
       data={results}
-      renderItem={({item}) => <Coupon {...item} loading={isLoading} />}
+      renderItem={({item, index}) => (
+        <Coupon {...item} loading={isLoading} index={index} />
+      )}
       keyExtractor={(item) => item._id.toString()}
       contentContainerStyle={{paddingBottom: 20}}
       ListFooterComponent={() =>

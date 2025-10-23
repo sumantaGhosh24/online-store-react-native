@@ -1,7 +1,5 @@
 import {useClerk, useUser} from "@clerk/clerk-expo";
-import {Ionicons} from "@expo/vector-icons";
-import {router, Stack} from "expo-router";
-import {useState} from "react";
+import {useCallback, useState} from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -12,7 +10,6 @@ import {
   View,
 } from "react-native";
 
-import {Colors} from "@/constant/colors";
 import {useAuthStore} from "@/store";
 
 const DeleteUser = () => {
@@ -24,7 +21,7 @@ const DeleteUser = () => {
 
   const {resetOnboarding} = useAuthStore();
 
-  const handleDeleteUser = async () => {
+  const handleDeleteUser = useCallback(async () => {
     if (!isLoaded) return;
 
     try {
@@ -70,25 +67,10 @@ const DeleteUser = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [isLoaded, user, signOut, resetOnboarding]);
 
   return (
     <View className="flex-1 items-center justify-center px-2">
-      <Stack.Screen
-        options={{
-          headerShadowVisible: false,
-          headerStyle: {backgroundColor: Colors.background},
-          headerTitleStyle: {color: "white"},
-          headerLeft: () => (
-            <TouchableOpacity
-              className="items-center justify-center mr-5"
-              onPress={() => router.back()}
-            >
-              <Ionicons name="chevron-back" size={24} color="#fff" />
-            </TouchableOpacity>
-          ),
-        }}
-      />
       <View className="dark:bg-white rounded-full h-24 w-24 items-center justify-center">
         <Image
           source={require("@/assets/images/adaptive-icon.png")}

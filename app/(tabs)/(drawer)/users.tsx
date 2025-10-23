@@ -7,8 +7,8 @@ import {
   TouchableOpacity,
 } from "react-native";
 
-import EmptyState from "@/components/empty-state";
-import User from "@/components/user";
+import EmptyState from "@/components/ui/empty-state";
+import User from "@/components/users/user";
 import {PAGINATION_MAX_COUNT} from "@/constant";
 import {api} from "@/convex/_generated/api";
 
@@ -24,7 +24,9 @@ const Users = () => {
   return (
     <FlatList
       data={results}
-      renderItem={({item}) => <User {...item} loading={isLoading} />}
+      renderItem={({item, index}) => (
+        <User {...item} loading={isLoading} index={index} />
+      )}
       keyExtractor={(item) => item._id.toString()}
       contentContainerStyle={{paddingBottom: 20}}
       ListFooterComponent={() =>

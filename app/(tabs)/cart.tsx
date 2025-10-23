@@ -3,10 +3,10 @@ import {Link} from "expo-router";
 import {useState} from "react";
 import {FlatList, Text, TouchableOpacity, View} from "react-native";
 
-import CartApplyCoupon from "@/components/cart-apply-coupon";
-import CartCoupon from "@/components/cart-coupon";
-import CartItem from "@/components/cart-item";
-import EmptyCart from "@/components/empty-cart";
+import CartApplyCoupon from "@/components/cart/cart-apply-coupon";
+import CartCoupon from "@/components/cart/cart-coupon";
+import CartItem from "@/components/cart/cart-item";
+import EmptyCart from "@/components/cart/empty-cart";
 import {api} from "@/convex/_generated/api";
 import {useCartStore} from "@/store/cart";
 

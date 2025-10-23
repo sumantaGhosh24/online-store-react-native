@@ -1,7 +1,7 @@
 import {Ionicons} from "@expo/vector-icons";
 import {useQuery} from "convex/react";
-import {router, Stack, useLocalSearchParams} from "expo-router";
-import {useState} from "react";
+import {Stack, useLocalSearchParams} from "expo-router";
+import {useCallback, useState} from "react";
 import {
   Alert,
   Image,
@@ -13,9 +13,8 @@ import {
 } from "react-native";
 import Markdown from "react-native-markdown-display";
 
-import AddProductReview from "@/components/add-product-review";
-import ProductReviews from "@/components/product-reviews";
-import {Colors} from "@/constant/colors";
+import AddProductReview from "@/components/reviews/add-product-review";
+import ProductReviews from "@/components/reviews/product-reviews";
 import {api} from "@/convex/_generated/api";
 import {Id} from "@/convex/_generated/dataModel";
 import {useCartStore} from "@/store/cart";
@@ -29,15 +28,15 @@ const ProductDetails = () => {
 
   const {addProduct} = useCartStore();
 
-  const shareProduct = () => {
+  const shareProduct = useCallback(() => {
     Alert.alert("Share product");
-  };
+  }, []);
 
-  const likeProduct = () => {
+  const likeProduct = useCallback(() => {
     Alert.alert("Like product");
-  };
+  }, []);
 
-  const handleAddToCart = () => {
+  const handleAddToCart = useCallback(() => {
     addProduct(id as Id<"products">);
 
     ToastAndroid.showWithGravityAndOffset(
@@ -47,15 +46,19 @@ const ProductDetails = () => {
       0,
       100
     );
-  };
+  }, [addProduct, id]);
+
+  const handleChangeImage = useCallback(
+    (index: number) => {
+      setActiveImage(index);
+    },
+    [setActiveImage]
+  );
 
   return (
     <>
       <Stack.Screen
         options={{
-          headerTitle: "Product Details",
-          headerStyle: {backgroundColor: Colors.background},
-          headerTitleStyle: {color: "white"},
           headerRight: () => (
             <View className="flex-row items-center justify-center gap-3">
               <TouchableOpacity
@@ -72,14 +75,6 @@ const ProductDetails = () => {
               </TouchableOpacity>
             </View>
           ),
-          headerLeft: () => (
-            <TouchableOpacity
-              className="items-center justify-center mr-5"
-              onPress={() => router.back()}
-            >
-              <Ionicons name="chevron-back" size={24} color="#fff" />
-            </TouchableOpacity>
-          ),
         }}
       />
       <View>
@@ -90,7 +85,7 @@ const ProductDetails = () => {
             resizeMode="cover"
           />
           <View className="flex flex-row items-center justify-center gap-3 mb-4">
-            {product?.imageUrls.map((image) => (
+            {product?.imageUrls.map((image, index) => (
               <TouchableOpacity
                 className={`h-12 w-12 rounded-full ${
                   product?.imageUrls.indexOf(image) === activeImage
@@ -98,9 +93,7 @@ const ProductDetails = () => {
                     : ""
                 }`}
                 key={image}
-                onPress={() =>
-                  setActiveImage(product?.imageUrls.indexOf(image))
-                }
+                onPress={() => handleChangeImage(index)}
               >
                 <Image
                   source={{uri: image}}

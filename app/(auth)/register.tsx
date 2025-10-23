@@ -3,21 +3,21 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import {Checkbox} from "expo-checkbox";
 import * as Linking from "expo-linking";
 import {Link} from "expo-router";
-import {useState} from "react";
-import {Controller, useForm} from "react-hook-form";
+import {useCallback, useState} from "react";
+import {useForm} from "react-hook-form";
 import {
-  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   Text,
-  TextInput,
   ToastAndroid,
   TouchableOpacity,
   View,
 } from "react-native";
 import {z} from "zod";
 
-import RegisterVerify from "@/components/register-verify";
+import RegisterVerify from "@/components/auth/register-verify";
+import AnimatedButton from "@/components/ui/animated-button";
+import AnimatedInput from "@/components/ui/animated-input";
 
 const signUpSchema = z
   .object({
@@ -61,38 +61,52 @@ const Register = () => {
   const [pendingVerification, setPendingVerification] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showCf_password, setShowCf_password] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
 
   const {isLoaded, signUp} = useSignUp();
 
-  const onSubmit = async (data: SignUpForm) => {
-    if (!isLoaded) return;
+  const onSubmit = useCallback(
+    async (data: SignUpForm) => {
+      if (!isLoaded) return;
 
-    try {
-      setLoading(true);
+      if (!isTermsChecked)
+        return ToastAndroid.showWithGravityAndOffset(
+          "Please accept the terms and conditions",
+          ToastAndroid.LONG,
+          ToastAndroid.BOTTOM,
+          25,
+          50
+        );
 
-      await signUp.create({
-        firstName: data.firstName,
-        lastName: data.lastName,
-        emailAddress: data.email,
-        password: data.password,
-      });
+      setLoading("loading");
+      try {
+        await signUp.create({
+          firstName: data.firstName,
+          lastName: data.lastName,
+          emailAddress: data.email,
+          password: data.password,
+        });
 
-      await signUp.prepareEmailAddressVerification({strategy: "email_code"});
+        await signUp.prepareEmailAddressVerification({strategy: "email_code"});
 
-      setPendingVerification(true);
-    } catch (error: any) {
-      ToastAndroid.showWithGravityAndOffset(
-        error.message,
-        ToastAndroid.LONG,
-        ToastAndroid.BOTTOM,
-        25,
-        50
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+        setLoading("success");
+
+        setPendingVerification(true);
+      } catch (error: any) {
+        setLoading("error");
+        ToastAndroid.showWithGravityAndOffset(
+          error.message,
+          ToastAndroid.LONG,
+          ToastAndroid.BOTTOM,
+          25,
+          50
+        );
+      }
+    },
+    [isLoaded, isTermsChecked, signUp]
+  );
 
   const handleLinkPress = (linkType: "terms" | "privacy") => {
     Linking.openURL(
@@ -109,87 +123,44 @@ const Register = () => {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <View className="p-4">
-        <Text className="text-2xl font-bold mb-2 dark:text-white">
+        <Text className="text-2xl font-bold mb-5 dark:text-white">
           Sign up user
         </Text>
-        <Text className="text-base font-medium mb-2 dark:text-white">
-          Enter email address
-        </Text>
-        <Controller
+        <AnimatedInput
           control={control}
           name="firstName"
-          render={({field: {onChange, onBlur, value}}) => (
-            <TextInput
-              className="border border-gray-300 rounded-md px-3 py-2 mb-2 bg-white placeholder:text-black dark:bg-gray-700 dark:border-0 dark:placeholder:text-white dark:text-white"
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              placeholder="Enter first name"
-              keyboardType="default"
-              autoCapitalize="none"
-            />
-          )}
+          label="First Name"
+          keyboardType="default"
+          autoCapitalize="none"
+          error={errors.firstName?.message}
+          setLoading={setLoading}
         />
-        {errors.firstName && (
-          <Text className="text-red-500 mb-2">{errors.firstName.message}</Text>
-        )}
-        <Controller
+        <AnimatedInput
           control={control}
           name="lastName"
-          render={({field: {onChange, onBlur, value}}) => (
-            <TextInput
-              className="border border-gray-300 rounded-md px-3 py-2 mb-2 bg-white placeholder:text-black dark:bg-gray-700 dark:border-0 dark:placeholder:text-white dark:text-white"
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              placeholder="Enter last name"
-              keyboardType="default"
-              autoCapitalize="none"
-            />
-          )}
+          label="Last Name"
+          keyboardType="default"
+          autoCapitalize="none"
+          error={errors.lastName?.message}
+          setLoading={setLoading}
         />
-        {errors.lastName && (
-          <Text className="text-red-500 mb-2">{errors.lastName.message}</Text>
-        )}
-        <Controller
+        <AnimatedInput
           control={control}
           name="email"
-          render={({field: {onChange, onBlur, value}}) => (
-            <TextInput
-              className="border border-gray-300 rounded-md px-3 py-2 mb-2 bg-white placeholder:text-black dark:bg-gray-700 dark:border-0 dark:placeholder:text-white dark:text-white"
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              placeholder="Enter email address"
-              keyboardType="email-address"
-              autoCapitalize="none"
-            />
-          )}
+          label="Email Address"
+          keyboardType="email-address"
+          autoCapitalize="none"
+          error={errors.email?.message}
+          setLoading={setLoading}
         />
-        {errors.email && (
-          <Text className="text-red-500 mb-2">{errors.email.message}</Text>
-        )}
-        <Controller
+        <AnimatedInput
           control={control}
           name="password"
-          render={({field: {onChange, onBlur, value}}) => (
-            <TextInput
-              className="border border-gray-300 rounded-md px-3 py-2 mb-2 bg-white placeholder:text-black dark:bg-gray-700 dark:border-0 dark:placeholder:text-white dark:text-white"
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              placeholder="Enter password"
-              secureTextEntry={!showPassword}
-              autoCapitalize="none"
-              autoCorrect={false}
-              textContentType="password"
-              accessibilityLabel="password"
-            />
-          )}
+          label="Password"
+          secureTextEntry={!showPassword}
+          error={errors.password?.message}
+          setLoading={setLoading}
         />
-        {errors.password && (
-          <Text className="text-red-500 mb-2">{errors.password.message}</Text>
-        )}
         <TouchableOpacity
           className="flex-row items-center mb-4"
           onPress={() => setShowPassword((prev) => !prev)}
@@ -206,29 +177,14 @@ const Register = () => {
           </View>
           <Text className="text-base dark:text-white">Show password</Text>
         </TouchableOpacity>
-        <Controller
+        <AnimatedInput
           control={control}
           name="cf_password"
-          render={({field: {onChange, onBlur, value}}) => (
-            <TextInput
-              className="border border-gray-300 rounded-md px-3 py-2 mb-2 bg-white placeholder:text-black dark:bg-gray-700 dark:border-0 dark:placeholder:text-white dark:text-white"
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              placeholder="Enter confirm password"
-              secureTextEntry={!showCf_password}
-              autoCapitalize="none"
-              autoCorrect={false}
-              textContentType="password"
-              accessibilityLabel="Confirm Password"
-            />
-          )}
+          label="Confirm Password"
+          secureTextEntry={!showCf_password}
+          error={errors.cf_password?.message}
+          setLoading={setLoading}
         />
-        {errors.cf_password && (
-          <Text className="text-red-500 mb-2">
-            {errors.cf_password.message}
-          </Text>
-        )}
         <TouchableOpacity
           className="flex-row items-center mb-4"
           onPress={() => setShowCf_password((prev) => !prev)}
@@ -247,17 +203,11 @@ const Register = () => {
             Show confirm password
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          className="bg-primary rounded-full py-3 items-center mb-4 disabled:bg-blue-300"
+        <AnimatedButton
+          title="Sign Up"
+          state={loading}
           onPress={handleSubmit(onSubmit)}
-          disabled={!isTermsChecked || loading}
-        >
-          {loading ? (
-            <ActivityIndicator color="white" />
-          ) : (
-            <Text className="text-lg font-medium text-white">Sign Up</Text>
-          )}
-        </TouchableOpacity>
+        />
         <View className="flex-row items-center">
           <Checkbox
             value={isTermsChecked}

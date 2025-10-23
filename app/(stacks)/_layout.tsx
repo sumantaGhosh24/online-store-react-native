@@ -1,6 +1,9 @@
+import {Ionicons} from "@expo/vector-icons";
 import {useQuery} from "convex/react";
-import {Stack} from "expo-router";
+import {Stack, router} from "expo-router";
+import {TouchableOpacity} from "react-native";
 
+import {Colors} from "@/constant/colors";
 import {api} from "@/convex/_generated/api";
 
 const StackLayout = () => {
@@ -10,7 +13,21 @@ const StackLayout = () => {
 
   return (
     <>
-      <Stack>
+      <Stack
+        screenOptions={{
+          headerShadowVisible: false,
+          headerStyle: {backgroundColor: Colors.background},
+          headerTitleStyle: {color: "white"},
+          headerLeft: () => (
+            <TouchableOpacity
+              className="items-center justify-center mr-5"
+              onPress={() => router.back()}
+            >
+              <Ionicons name="chevron-back" size={24} color="#fff" />
+            </TouchableOpacity>
+          ),
+        }}
+      >
         <Stack.Screen
           name="product/details/[id]"
           options={{title: "Product Details"}}

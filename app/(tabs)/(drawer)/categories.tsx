@@ -7,8 +7,8 @@ import {
   TouchableOpacity,
 } from "react-native";
 
-import Category from "@/components/category";
-import EmptyState from "@/components/empty-state";
+import Category from "@/components/categories/category";
+import EmptyState from "@/components/ui/empty-state";
 import {PAGINATION_MAX_COUNT} from "@/constant";
 import {api} from "@/convex/_generated/api";
 
@@ -24,7 +24,9 @@ const Categories = () => {
   return (
     <FlatList
       data={results}
-      renderItem={({item}) => <Category {...item} loading={isLoading} />}
+      renderItem={({item, index}) => (
+        <Category {...item} loading={isLoading} index={index} />
+      )}
       keyExtractor={(item) => item._id.toString()}
       contentContainerStyle={{paddingBottom: 20}}
       ListFooterComponent={() =>

@@ -1,4 +1,4 @@
-import {transporter} from "@/utils/stripe-server";
+import {transporter} from "@/utils/mail-server";
 
 export async function POST(req: Request) {
   const {
