@@ -1,4 +1,3 @@
-import {useStripe} from "@stripe/stripe-react-native";
 import {useMutation, useQuery} from "convex/react";
 import * as Linking from "expo-linking";
 import {router} from "expo-router";
@@ -7,6 +6,7 @@ import {Text, ToastAndroid, TouchableOpacity, View} from "react-native";
 
 import CartCoupon from "@/components/cart/cart-coupon";
 import CartAddress from "@/components/cart/cart-address";
+import {useAppStripe} from "@/components/providers/useAppStripe";
 import {api} from "@/convex/_generated/api";
 import {useCartStore} from "@/store/cart";
 import {Id} from "@/convex/_generated/dataModel";
@@ -129,7 +129,7 @@ const Checkout = () => {
 
   const user = useQuery(api.users.getUser);
 
-  const {initPaymentSheet, presentPaymentSheet} = useStripe();
+  const {initPaymentSheet, presentPaymentSheet} = useAppStripe();
 
   const [loading, setLoading] = useState(false);
   const [discount, setDiscount] = useState(0);
