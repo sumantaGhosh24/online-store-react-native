@@ -3,7 +3,6 @@ import {useMutation} from "convex/react";
 import {useCallback, useState} from "react";
 import {Alert, Text, ToastAndroid, TouchableOpacity, View} from "react-native";
 import {router} from "expo-router";
-import * as DropdownMenu from "zeego/dropdown-menu";
 
 import {api} from "@/convex/_generated/api";
 import {Id} from "@/convex/_generated/dataModel";
@@ -90,33 +89,31 @@ const Address = ({
             </Text>
           </View>
           <View>
-            <DropdownMenu.Root>
-              <DropdownMenu.Trigger>
-                <TouchableOpacity>
-                  <Ionicons
-                    name="settings"
-                    size={32}
-                    color={Colors.background}
-                  />
-                </TouchableOpacity>
-              </DropdownMenu.Trigger>
-              <DropdownMenu.Content>
-                <DropdownMenu.Item
-                  key="update"
-                  onSelect={() => router.push(`/address/update/${_id}`)}
-                  disabled={deleteLoading}
-                >
-                  <DropdownMenu.ItemTitle>Update</DropdownMenu.ItemTitle>
-                </DropdownMenu.Item>
-                <DropdownMenu.Item
-                  key="delete"
-                  onSelect={() => handleDeleteAddress()}
-                  disabled={deleteLoading}
-                >
-                  <DropdownMenu.ItemTitle>Delete</DropdownMenu.ItemTitle>
-                </DropdownMenu.Item>
-              </DropdownMenu.Content>
-            </DropdownMenu.Root>
+            <View style={{ flexDirection: "row" }}>
+              <TouchableOpacity
+                className="p-1"
+                style={{ marginRight: 8 }}
+                disabled={deleteLoading}
+                onPress={() => router.push(`/address/update/${_id}`)}
+              >
+                <Ionicons
+                  name="create-outline"
+                  size={24}
+                  color={Colors.background}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                className="p-1"
+                disabled={deleteLoading}
+                onPress={handleDeleteAddress}
+              >
+                <Ionicons
+                  name="trash-outline"
+                  size={24}
+                  color="#ef4444"
+                />
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
         <View className="flex-1 gap-1.5 mt-3">

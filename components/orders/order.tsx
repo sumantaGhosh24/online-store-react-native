@@ -1,7 +1,6 @@
 import {Ionicons} from "@expo/vector-icons";
 import {router} from "expo-router";
 import {Text, TouchableOpacity, View} from "react-native";
-import * as DropdownMenu from "zeego/dropdown-menu";
 
 import {Colors} from "@/constant/colors";
 
@@ -77,21 +76,9 @@ const Order = ({
         </View>
       </View>
       <View>
-        <DropdownMenu.Root>
-          <DropdownMenu.Trigger>
-            <TouchableOpacity>
-              <Ionicons name="settings" size={32} color={Colors.background} />
-            </TouchableOpacity>
-          </DropdownMenu.Trigger>
-          <DropdownMenu.Content>
-            <DropdownMenu.Item
-              key="view"
-              onSelect={() => router.push(`/order/details/${_id}`)}
-            >
-              <DropdownMenu.ItemTitle>View Details</DropdownMenu.ItemTitle>
-            </DropdownMenu.Item>
-          </DropdownMenu.Content>
-        </DropdownMenu.Root>
+        <TouchableOpacity onPress={() => router.push(`/order/details/${_id}`)}>
+          <Ionicons name="settings" size={32} color={Colors.background} />
+        </TouchableOpacity>
       </View>
     </AnimatedListItem>
   );

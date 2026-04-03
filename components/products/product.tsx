@@ -12,7 +12,6 @@ import {
   View,
 } from "react-native";
 import {createShimmerPlaceholder} from "react-native-shimmer-placeholder";
-import * as DropdownMenu from "zeego/dropdown-menu";
 
 import {Colors} from "@/constant/colors";
 import {api} from "@/convex/_generated/api";
@@ -153,29 +152,31 @@ const Product = memo(
           </View>
         </View>
         <View>
-          <DropdownMenu.Root>
-            <DropdownMenu.Trigger>
-              <TouchableOpacity>
-                <Ionicons name="settings" size={32} color={Colors.background} />
-              </TouchableOpacity>
-            </DropdownMenu.Trigger>
-            <DropdownMenu.Content>
-              <DropdownMenu.Item
-                key="update"
-                onSelect={() => router.push(`/product/update/${_id}`)}
-                disabled={loading || deleteLoading}
-              >
-                <DropdownMenu.ItemTitle>Update</DropdownMenu.ItemTitle>
-              </DropdownMenu.Item>
-              <DropdownMenu.Item
-                key="delete"
-                onSelect={() => handleDeleteProduct()}
-                disabled={loading || deleteLoading}
-              >
-                <DropdownMenu.ItemTitle>Delete</DropdownMenu.ItemTitle>
-              </DropdownMenu.Item>
-            </DropdownMenu.Content>
-          </DropdownMenu.Root>
+          <View style={{ flexDirection: "row" }}>
+            <TouchableOpacity
+              className="p-1"
+              style={{ marginRight: 8 }}
+              disabled={loading || deleteLoading}
+              onPress={() => router.push(`/product/update/${_id}`)}
+            >
+              <Ionicons
+                name="create-outline"
+                size={20}
+                color={Colors.background}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              className="p-1"
+              disabled={loading || deleteLoading}
+              onPress={() => handleDeleteProduct()}
+            >
+              <Ionicons
+                name="trash-outline"
+                size={20}
+                color="#ef4444"
+              />
+            </TouchableOpacity>
+          </View>
         </View>
       </AnimatedListItem>
     );

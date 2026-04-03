@@ -12,7 +12,6 @@ import {
   View,
 } from "react-native";
 import {createShimmerPlaceholder} from "react-native-shimmer-placeholder";
-import * as DropdownMenu from "zeego/dropdown-menu";
 
 import {Colors} from "@/constant/colors";
 import {api} from "@/convex/_generated/api";
@@ -114,35 +113,30 @@ const Category = ({
             </ShimmerPlaceholder>
           </View>
         </View>
-        <DropdownMenu.Root>
-          <DropdownMenu.Trigger>
-            <TouchableOpacity className="p-1">
-              <Ionicons
-                name="ellipsis-vertical"
-                size={20}
-                color={Colors.background}
-              />
-            </TouchableOpacity>
-          </DropdownMenu.Trigger>
-          <DropdownMenu.Content>
-            <DropdownMenu.Item
-              key="update"
-              onSelect={() => router.push(`/category/update/${_id}`)}
-              disabled={loading || deleteLoading}
-            >
-              <DropdownMenu.ItemTitle>Update</DropdownMenu.ItemTitle>
-            </DropdownMenu.Item>
-            <DropdownMenu.Item
-              key="delete"
-              onSelect={() => handleDeleteCategory()}
-              disabled={loading || deleteLoading}
-            >
-              <DropdownMenu.ItemTitle className="text-red-500">
-                Delete
-              </DropdownMenu.ItemTitle>
-            </DropdownMenu.Item>
-          </DropdownMenu.Content>
-        </DropdownMenu.Root>
+        <View className="flex-row items-center space-x-2">
+          <TouchableOpacity
+            className="p-1"
+            disabled={loading || deleteLoading}
+            onPress={() => router.push(`/category/update/${_id}`)}
+          >
+            <Ionicons
+              name="create-outline"
+              size={20}
+              color={Colors.background}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            className="p-1"
+            disabled={loading || deleteLoading}
+            onPress={handleDeleteCategory}
+          >
+            <Ionicons
+              name="trash-outline"
+              size={20}
+              color="#ef4444"
+            />
+          </TouchableOpacity>
+        </View>
       </View>
     </AnimatedListItem>
   );

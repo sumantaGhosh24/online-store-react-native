@@ -9,7 +9,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import * as DropdownMenu from "zeego/dropdown-menu";
 
 import {Colors} from "@/constant/colors";
 import {api} from "@/convex/_generated/api";
@@ -122,26 +121,17 @@ const Review = ({
           </View>
           {isAdmin && (
             <View>
-              <DropdownMenu.Root>
-                <DropdownMenu.Trigger>
-                  <TouchableOpacity>
-                    <Ionicons
-                      name="settings"
-                      size={32}
-                      color={Colors.background}
-                    />
-                  </TouchableOpacity>
-                </DropdownMenu.Trigger>
-                <DropdownMenu.Content>
-                  <DropdownMenu.Item
-                    key="delete"
-                    onSelect={() => handleDeleteReview()}
-                    disabled={deleteLoading}
-                  >
-                    <DropdownMenu.ItemTitle>Delete</DropdownMenu.ItemTitle>
-                  </DropdownMenu.Item>
-                </DropdownMenu.Content>
-              </DropdownMenu.Root>
+              <TouchableOpacity
+                onPress={() => handleDeleteReview()}
+                disabled={deleteLoading}
+                style={{ padding: 4 }}
+              >
+                <Ionicons
+                  name="trash-outline"
+                  size={28}
+                  color="#ef4444"
+                />
+              </TouchableOpacity>
             </View>
           )}
         </View>

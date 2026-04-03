@@ -12,7 +12,6 @@ import {Stack} from "expo-router";
 
 import {Colors} from "@/constant/colors";
 import {api} from "@/convex/_generated/api";
-import DropdownPlus from "@/components/ui/dropdown-plus";
 
 const DrawerLayout = () => {
   const user = useQuery(api.users.getUser);
@@ -101,7 +100,13 @@ const DrawerLayout = () => {
               drawerLabel: "Manage Products",
               title: "Manage Products",
               headerRight: () => (
-                <DropdownPlus text="Create Product" href="/product/create" />
+                <TouchableOpacity
+                  activeOpacity={0.7}
+                  style={{ padding: 5 }}
+                  onPress={() => router.push("/product/create")}
+                >
+                  <Ionicons name="add" size={32} color={"#fff"} />
+                </TouchableOpacity>
               ),
             }}
           />
@@ -111,7 +116,13 @@ const DrawerLayout = () => {
               drawerLabel: "Manage Categories",
               title: "Manage Categories",
               headerRight: () => (
-                <DropdownPlus text="Create Category" href="/category/create" />
+                <TouchableOpacity
+                  activeOpacity={0.7}
+                  style={{ padding: 5 }}
+                  onPress={() => router.push("/category/create")}
+                >
+                  <Ionicons name="add" size={32} color={"#fff"} />
+                </TouchableOpacity>
               ),
             }}
           />
@@ -125,7 +136,13 @@ const DrawerLayout = () => {
               drawerLabel: "Manage Coupons",
               title: "Manage Coupons",
               headerRight: () => (
-                <DropdownPlus text="Create Coupon" href="/coupon/create" />
+                <TouchableOpacity
+                  activeOpacity={0.7}
+                  style={{ padding: 5 }}
+                  onPress={() => router.push("/coupon/create")}
+                >
+                  <Ionicons name="add" size={32} color={"#fff"} />
+                </TouchableOpacity>
               ),
             }}
           />

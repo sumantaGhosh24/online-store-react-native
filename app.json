@@ -27,7 +27,7 @@
       "package": "com.anonymous.onlinestore"
     },
     "web": {
-      "output": "server",
+      "output": "static",
       "favicon": "./assets/images/ios-light.png",
       "bundler": "metro"
     },

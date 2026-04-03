@@ -4,7 +4,6 @@ import {TouchableOpacity} from "react-native";
 import {useQuery} from "convex/react";
 
 import {Colors} from "@/constant/colors";
-import DropdownPlus from "@/components/ui/dropdown-plus";
 import {api} from "@/convex/_generated/api";
 
 const StackLayout = () => {
@@ -39,7 +38,13 @@ const StackLayout = () => {
             title: "Addresses",
             presentation: "formSheet",
             headerRight: () => (
-              <DropdownPlus text="Create Address" href="/address/create" />
+              <TouchableOpacity
+                activeOpacity={0.7}
+                style={{padding: 5}}
+                onPress={() => router.push("/address/create")}
+              >
+                <Ionicons name="add" size={32} color={"#fff"} />
+              </TouchableOpacity>
             ),
           }}
         />

@@ -5,7 +5,6 @@ import {router} from "expo-router";
 import {useCallback, useState} from "react";
 import {Alert, Text, ToastAndroid, TouchableOpacity, View} from "react-native";
 import {createShimmerPlaceholder} from "react-native-shimmer-placeholder";
-import * as DropdownMenu from "zeego/dropdown-menu";
 
 import {Colors} from "@/constant/colors";
 import {api} from "@/convex/_generated/api";
@@ -98,35 +97,31 @@ const Coupon = ({
               </Text>
             </ShimmerPlaceholder>
           </View>
-          <DropdownMenu.Root>
-            <DropdownMenu.Trigger>
-              <TouchableOpacity className="p-1">
-                <Ionicons
-                  name="ellipsis-vertical"
-                  size={20}
-                  color={Colors.background}
-                />
-              </TouchableOpacity>
-            </DropdownMenu.Trigger>
-            <DropdownMenu.Content>
-              <DropdownMenu.Item
-                key="update"
-                onSelect={() => router.push(`/coupon/update/${_id}`)}
-                disabled={loading || deleteLoading}
-              >
-                <DropdownMenu.ItemTitle>Update</DropdownMenu.ItemTitle>
-              </DropdownMenu.Item>
-              <DropdownMenu.Item
-                key="delete"
-                onSelect={() => handleDeleteCoupon()}
-                disabled={loading || deleteLoading}
-              >
-                <DropdownMenu.ItemTitle className="text-red-500">
-                  Delete
-                </DropdownMenu.ItemTitle>
-              </DropdownMenu.Item>
-            </DropdownMenu.Content>
-          </DropdownMenu.Root>
+          <View style={{ flexDirection: "row" }}>
+            <TouchableOpacity
+              className="p-1"
+              style={{ marginRight: 8 }}
+              disabled={loading || deleteLoading}
+              onPress={() => router.push(`/coupon/update/${_id}`)}
+            >
+              <Ionicons
+                name="create-outline"
+                size={20}
+                color={Colors.background}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              className="p-1"
+              disabled={loading || deleteLoading}
+              onPress={handleDeleteCoupon}
+            >
+              <Ionicons
+                name="trash-outline"
+                size={20}
+                color="#ef4444"
+              />
+            </TouchableOpacity>
+          </View>
         </View>
         <ShimmerPlaceholder width={100} height={28} visible={!loading}>
           <View className="self-start mt-2 bg-primary/10 px-3 py-1 rounded-full">
