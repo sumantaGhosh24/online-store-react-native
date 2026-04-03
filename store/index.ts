@@ -7,9 +7,9 @@ const isWeb = Platform.OS === "web";
 
 type UserState = {
   hasCompletedOnboarding: boolean;
-  _hasHydrated: boolean;
-  completeOnboarding: () => void;
+  setHasCompletedOnboarding: () => void;
   resetOnboarding: () => void;
+  _hasHydrated: boolean;
   setHasHydrated: (value: boolean) => void;
 };
 
@@ -17,31 +17,10 @@ export const useAuthStore = create(
   persist<UserState>(
     (set) => ({
       hasCompletedOnboarding: false,
+      setHasCompletedOnboarding: () => set({hasCompletedOnboarding: true}),
+      resetOnboarding: () => set({hasCompletedOnboarding: false}),
       _hasHydrated: false,
-      completeOnboarding: () => {
-        set((state) => {
-          return {
-            ...state,
-            hasCompletedOnboarding: true,
-          };
-        });
-      },
-      resetOnboarding: () => {
-        set((state) => {
-          return {
-            ...state,
-            hasCompletedOnboarding: false,
-          };
-        });
-      },
-      setHasHydrated: (value: boolean) => {
-        set((state) => {
-          return {
-            ...state,
-            _hasHydrated: value,
-          };
-        });
-      },
+      setHasHydrated: (value) => set({_hasHydrated: value}),
     }),
     {
       name: "auth-store",
@@ -58,6 +37,6 @@ export const useAuthStore = create(
           state?.setHasHydrated(true);
         };
       },
-    }
-  )
+    },
+  ),
 );

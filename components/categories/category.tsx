@@ -65,12 +65,12 @@ const Category = ({
                 ToastAndroid.LONG,
                 ToastAndroid.BOTTOM,
                 25,
-                50
+                50,
               );
             },
             style: "destructive",
           },
-        ]
+        ],
       );
     } catch (error: any) {
       ToastAndroid.showWithGravityAndOffset(
@@ -78,7 +78,7 @@ const Category = ({
         ToastAndroid.LONG,
         ToastAndroid.BOTTOM,
         25,
-        50
+        50,
       );
     } finally {
       setDeleteLoading(false);
@@ -87,46 +87,41 @@ const Category = ({
 
   return (
     <AnimatedListItem index={index}>
-      <ShimmerPlaceholder
-        width={60}
-        height={60}
-        shimmerStyle={{borderRadius: 30}}
-        visible={!loading}
-      >
-        <Image source={{uri: image}} className="h-16 w-16 rounded-full" />
-      </ShimmerPlaceholder>
-      <View className="flex-1 gap-1.5">
-        <ShimmerPlaceholder width={140} height={20} visible={!loading}>
-          <Text className="text-xs font-bold dark:text-white">{_id}</Text>
-        </ShimmerPlaceholder>
-        <ShimmerPlaceholder width={140} height={20} visible={!loading}>
-          <Text className="text-base capitalize font-bold dark:text-white">
-            {name}
-          </Text>
-        </ShimmerPlaceholder>
+      <View className="flex-row items-center gap-3 w-full">
         <ShimmerPlaceholder
-          width={75}
-          height={20}
-          style={{marginBottom: 5}}
+          width={60}
+          height={60}
+          shimmerStyle={{borderRadius: 30}}
           visible={!loading}
         >
-          <View className="flex flex-row items-center gap-3">
-            <Ionicons
-              name="refresh-circle"
-              size={18}
-              color={Colors.background}
-            />
-            <Text className="text-base dark:text-white">
-              Created at: {new Date(_creationTime as any).toLocaleDateString()}
-            </Text>
-          </View>
+          <Image source={{uri: image}} className="h-14 w-14 rounded-full" />
         </ShimmerPlaceholder>
-      </View>
-      <View>
+        <View className="flex-1 gap-1">
+          <ShimmerPlaceholder width={120} height={14} visible={!loading}>
+            <Text className="text-xs text-gray-500 dark:text-white">{_id}</Text>
+          </ShimmerPlaceholder>
+          <ShimmerPlaceholder width={160} height={18} visible={!loading}>
+            <Text className="text-base font-semibold dark:text-white capitalize">
+              {name}
+            </Text>
+          </ShimmerPlaceholder>
+          <View className="flex-row items-center gap-2 mt-1">
+            <Ionicons name="calendar-outline" size={14} color="#9CA3AF" />
+            <ShimmerPlaceholder width={140} height={14} visible={!loading}>
+              <Text className="text-xs text-gray-500 dark:text-white">
+                {new Date(_creationTime as any).toLocaleDateString()}
+              </Text>
+            </ShimmerPlaceholder>
+          </View>
+        </View>
         <DropdownMenu.Root>
           <DropdownMenu.Trigger>
-            <TouchableOpacity>
-              <Ionicons name="settings" size={32} color={Colors.background} />
+            <TouchableOpacity className="p-1">
+              <Ionicons
+                name="ellipsis-vertical"
+                size={20}
+                color={Colors.background}
+              />
             </TouchableOpacity>
           </DropdownMenu.Trigger>
           <DropdownMenu.Content>
@@ -142,7 +137,9 @@ const Category = ({
               onSelect={() => handleDeleteCategory()}
               disabled={loading || deleteLoading}
             >
-              <DropdownMenu.ItemTitle>Delete</DropdownMenu.ItemTitle>
+              <DropdownMenu.ItemTitle className="text-red-500">
+                Delete
+              </DropdownMenu.ItemTitle>
             </DropdownMenu.Item>
           </DropdownMenu.Content>
         </DropdownMenu.Root>

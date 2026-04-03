@@ -43,7 +43,7 @@ export const deleteFromClerk = internalMutation({
       await ctx.db.delete(user._id);
     } else {
       console.warn(
-        `Can't delete user, there is none for Clerk user ID: ${clerkUserId}`
+        `Can't delete user, there is none for Clerk user ID: ${clerkUserId}`,
       );
     }
   },
@@ -82,11 +82,6 @@ export const updateUserDetails = mutation({
     username: v.string(),
     dob: v.optional(v.string()),
     gender: v.optional(v.string()),
-    city: v.optional(v.string()),
-    state: v.optional(v.string()),
-    country: v.optional(v.string()),
-    zip: v.optional(v.string()),
-    addressline: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -114,11 +109,6 @@ export const updateUserDetails = mutation({
       username: args.username.toLowerCase(),
       dob: args.dob,
       gender: args.gender?.toLowerCase(),
-      city: args.city?.toLowerCase(),
-      state: args.state?.toLowerCase(),
-      country: args.country?.toLowerCase(),
-      zip: args.zip,
-      addressline: args.addressline?.toLowerCase(),
     });
   },
 });
@@ -157,7 +147,7 @@ export const getPaginatedUsers = query({
       users.page.map(async (user) => ({
         ...user,
         image: await ctx.storage.getUrl(user.image!),
-      }))
+      })),
     );
 
     return {

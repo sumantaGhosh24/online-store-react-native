@@ -1,5 +1,5 @@
 import {paginationOptsValidator} from "convex/server";
-import {v} from "convex/values";
+import {GenericId, v} from "convex/values";
 
 import {Doc} from "./_generated/dataModel";
 import {mutation, query} from "./_generated/server";
@@ -8,7 +8,7 @@ import {userByExternalId} from "./users";
 async function resolveProductDetails(
   product: Doc<"products">,
   db: any,
-  storage: any
+  storage: any,
 ) {
   const category = await db.get(product.categoryId);
 
@@ -19,18 +19,35 @@ async function resolveProductDetails(
   const imageUrls = await Promise.all(
     product.images.map(async (imageId) => {
       return imageId ? await storage.getUrl(imageId) : null;
-    })
+    }),
   );
 
   const user = await db.get(product.user);
 
   const userImageUrl = user?.image ? await storage.getUrl(user.image) : null;
 
+  const reviews = await db
+    .query("reviews")
+    .withIndex(
+      "by_product",
+      (q: {eq: (arg0: string, arg1: GenericId<"products">) => any}) =>
+        q.eq("product", product._id),
+    )
+    .collect();
+
+  const reviewsCount = reviews.length;
+  const averageReview =
+    reviewsCount > 0
+      ? reviews.reduce((acc: any, cur: {rating: any}) => acc + cur.rating, 0) /
+        reviewsCount
+      : 0;
+
   return {
     ...product,
     imageUrls: imageUrls.filter((url) => url !== null),
     category: {...category, image: categoryImageUrl},
     user: {...user, image: userImageUrl},
+    reviews: {count: reviewsCount, average: averageReview},
   };
 }
 
@@ -49,16 +66,16 @@ export const getPaginatedProducts = query({
       const searchResults = await ctx.db
         .query("products")
         .withSearchIndex("by_title", (q) =>
-          q.search("title", searchTitle.trim())
+          q.search("title", searchTitle.trim()),
         )
         .paginate(paginationOpts);
 
       const fullDocs = await Promise.all(
-        searchResults.page.map((result) => ctx.db.get(result._id))
+        searchResults.page.map((result) => ctx.db.get(result._id)),
       );
 
       const filteredProducts = fullDocs.filter(
-        (product) => product && product.categoryId === categoryId
+        (product) => product && product.categoryId === categoryId,
       );
 
       results = {
@@ -69,12 +86,12 @@ export const getPaginatedProducts = query({
       const searchResults = await ctx.db
         .query("products")
         .withSearchIndex("by_title", (q) =>
-          q.search("title", searchTitle.trim())
+          q.search("title", searchTitle.trim()),
         )
         .paginate(paginationOpts);
 
       const products = await Promise.all(
-        searchResults.page.map((res) => ctx.db.get(res._id))
+        searchResults.page.map((res) => ctx.db.get(res._id)),
       );
 
       results = {
@@ -95,8 +112,8 @@ export const getPaginatedProducts = query({
 
     const productsWithDetails = await Promise.all(
       results.page.map((product) =>
-        resolveProductDetails(product!, ctx.db, ctx.storage)
-      )
+        resolveProductDetails(product!, ctx.db, ctx.storage),
+      ),
     );
 
     return {
@@ -113,8 +130,8 @@ export const getProducts = query({
     const products = await ctx.db.query("products").collect();
     return await Promise.all(
       products.map((product) =>
-        resolveProductDetails(product!, ctx.db, ctx.storage)
-      )
+        resolveProductDetails(product!, ctx.db, ctx.storage),
+      ),
     );
   },
 });
@@ -279,7 +296,7 @@ export const removeProductImage = mutation({
     if (!product) throw new Error("Product not found.");
 
     const updatedImages = product.images.filter(
-      (id) => id !== args.imageIdToRemove
+      (id) => id !== args.imageIdToRemove,
     );
 
     await ctx.db.patch(args.productId, {

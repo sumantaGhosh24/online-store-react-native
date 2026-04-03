@@ -101,6 +101,7 @@ export const createPayment = mutation({
     amount: v.number(),
     couponId: v.optional(v.string()),
     paymentId: v.string(),
+    addressId: v.id("addresses"),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -110,6 +111,16 @@ export const createPayment = mutation({
 
     const user = await userByExternalId(ctx, identity.subject);
     if (user === null) throw new Error("User not found");
+
+    const address = await ctx.db
+      .query("addresses")
+      .withIndex("by_user", (q) => q.eq("user", user._id))
+      .filter((q) => q.eq(q.field("_id"), args.addressId))
+      .unique();
+
+    if (!address) {
+      throw new Error("Address not found for this user");
+    }
 
     let coupon = null;
     if (args.couponId) {
@@ -146,11 +157,11 @@ export const createPayment = mutation({
         minCartPrice: coupon?.minCartPrice ?? 0,
       },
       shippingAddress: {
-        address: user?.addressline ?? "",
-        city: user?.city ?? "",
-        zip: user?.zip ?? "",
-        country: user?.country ?? "",
-        state: user?.state ?? "",
+        address: address?.addressline,
+        city: address?.city,
+        zip: address?.zip,
+        country: address?.country,
+        state: address?.state,
       },
       paymentStatus: "completed",
       price: args.amount,

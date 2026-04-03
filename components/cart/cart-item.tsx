@@ -36,7 +36,7 @@ const CartItem = memo(({_id, quantity}: Product) => {
       ToastAndroid.SHORT,
       ToastAndroid.BOTTOM,
       0,
-      100
+      100,
     );
   };
 
@@ -49,7 +49,7 @@ const CartItem = memo(({_id, quantity}: Product) => {
       ToastAndroid.SHORT,
       ToastAndroid.BOTTOM,
       0,
-      100
+      100,
     );
   };
 
@@ -66,40 +66,47 @@ const CartItem = memo(({_id, quantity}: Product) => {
       ToastAndroid.SHORT,
       ToastAndroid.BOTTOM,
       0,
-      100
+      100,
     );
   };
 
   return (
-    <View className="flex-row items-center p-3 mb-3 bg-white dark:bg-gray-800">
-      <View className="flex-row items-center gap-2">
-        <View className="flex-col">
-          <Image
-            source={{uri: product?.imageUrls[0]}}
-            className="w-20 h-20 rounded-md mr-4"
-            resizeMode="cover"
-          />
-          <Text className="font-bold text-lg my-2 dark:text-white">
-            ₹{product?.price! * quantity}
-          </Text>
-          <View className="flex-row items-center gap-2">
-            <TouchableOpacity
-              onPress={() => handleReduceFromCart()}
-              className="border border-gray-300 rounded-full p-1 dark:border-white"
-            >
+    <View className="flex-row bg-white dark:bg-gray-800 p-3 rounded-md mb-3">
+      <Image
+        source={{uri: product?.imageUrls?.[0]}}
+        className="w-24 h-24 rounded-xl"
+        resizeMode="cover"
+      />
+      <View className="flex-1 ml-3 justify-between">
+        <Text
+          numberOfLines={1}
+          className="text-lg capitalize font-bold dark:text-white"
+        >
+          {product?.title}
+        </Text>
+        <Text
+          numberOfLines={2}
+          className="text-xs text-gray-500 dark:text-gray-300 mt-1"
+        >
+          {product?.description}
+        </Text>
+        <Text className="text-lg font-bold text-primary mt-1">
+          ₹{product?.price! * quantity}{" "}
+          <Text className="text-xs">(₹{product?.price} each)</Text>
+        </Text>
+        <View className="flex-row items-center justify-between mt-2">
+          <View className="flex-row items-center bg-gray-100 dark:bg-gray-700 rounded-full px-2 py-1">
+            <TouchableOpacity onPress={() => handleReduceFromCart()}>
               <Ionicons
                 name="remove"
                 size={18}
                 color={colorSchema === "dark" ? "#fff" : "#333"}
               />
             </TouchableOpacity>
-            <Text className="mx-2 font-semibold text-base dark:text-white">
+            <Text className="mx-3 font-semibold dark:text-white">
               {quantity}
             </Text>
-            <TouchableOpacity
-              onPress={() => handleAddToCart()}
-              className="border border-gray-300 rounded-full p-1 dark:border-white"
-            >
+            <TouchableOpacity onPress={() => handleAddToCart()}>
               <Ionicons
                 name="add"
                 size={18}
@@ -107,23 +114,12 @@ const CartItem = memo(({_id, quantity}: Product) => {
               />
             </TouchableOpacity>
           </View>
-        </View>
-        <View className="flex-1 flex-col justify-between">
-          <Text
-            className="font-bold text-base mb-1 dark:text-white"
-            numberOfLines={1}
-          >
-            {product?.title}
-          </Text>
-          <Text className="font-bold text-xs mb-1 dark:text-white">
-            {product?.description}
-          </Text>
-          <View className="flex-1" />
           <TouchableOpacity
             onPress={() => handleRemoveFromCart()}
-            className="border border-gray-300 rounded-full p-1 w-20 justify-center items-center dark:border-white"
+            className="flex-row items-center gap-1"
           >
-            <Text className="dark:text-white">Remove</Text>
+            <Ionicons name="trash-outline" size={16} color="#ef4444" />
+            <Text className="text-red-500 text-xs">Remove</Text>
           </TouchableOpacity>
         </View>
       </View>

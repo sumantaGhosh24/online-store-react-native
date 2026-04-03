@@ -16,10 +16,6 @@ const DropdownPlus = memo(({text, href}: DropdownPlusProps) => {
     router.push(href as any);
   }, [router, href]);
 
-  const handleDashboard = useCallback(() => {
-    router.push("/dashboard");
-  }, [router]);
-
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger>
@@ -33,9 +29,6 @@ const DropdownPlus = memo(({text, href}: DropdownPlusProps) => {
             <DropdownMenu.ItemTitle>{text}</DropdownMenu.ItemTitle>
           </DropdownMenu.Item>
         </DropdownMenu.Group>
-        <DropdownMenu.Item key="dashboard" onSelect={handleDashboard}>
-          <DropdownMenu.ItemTitle>Dashboard</DropdownMenu.ItemTitle>
-        </DropdownMenu.Item>
       </DropdownMenu.Content>
     </DropdownMenu.Root>
   );

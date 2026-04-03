@@ -8,11 +8,14 @@ import {useForm} from "react-hook-form";
 import {
   KeyboardAvoidingView,
   Platform,
+  Pressable,
+  ScrollView,
   Text,
   ToastAndroid,
   TouchableOpacity,
   View,
 } from "react-native";
+import Animated, {FadeInDown} from "react-native-reanimated";
 import {z} from "zod";
 
 import RegisterVerify from "@/components/auth/register-verify";
@@ -39,6 +42,7 @@ const signUpSchema = z
     message: "Passwords don't match",
     path: ["cf_password"],
   });
+
 type SignUpForm = z.infer<typeof signUpSchema>;
 
 const Register = () => {
@@ -77,7 +81,7 @@ const Register = () => {
           ToastAndroid.LONG,
           ToastAndroid.BOTTOM,
           25,
-          50
+          50,
         );
 
       setLoading("loading");
@@ -101,16 +105,18 @@ const Register = () => {
           ToastAndroid.LONG,
           ToastAndroid.BOTTOM,
           25,
-          50
+          50,
         );
       }
     },
-    [isLoaded, isTermsChecked, signUp]
+    [isLoaded, isTermsChecked, signUp],
   );
 
   const handleLinkPress = (linkType: "terms" | "privacy") => {
     Linking.openURL(
-      linkType === "terms" ? "https://www.lipsum.com" : "https://www.lipsum.com"
+      linkType === "terms"
+        ? "https://www.lipsum.com"
+        : "https://www.lipsum.com",
     );
   };
 
@@ -120,131 +126,145 @@ const Register = () => {
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      className="flex-1"
     >
-      <View className="p-4">
-        <Text className="text-2xl font-bold mb-5 dark:text-white">
-          Sign up user
-        </Text>
-        <AnimatedInput
-          control={control}
-          name="firstName"
-          label="First Name"
-          keyboardType="default"
-          autoCapitalize="none"
-          error={errors.firstName?.message}
-          setLoading={setLoading}
-        />
-        <AnimatedInput
-          control={control}
-          name="lastName"
-          label="Last Name"
-          keyboardType="default"
-          autoCapitalize="none"
-          error={errors.lastName?.message}
-          setLoading={setLoading}
-        />
-        <AnimatedInput
-          control={control}
-          name="email"
-          label="Email Address"
-          keyboardType="email-address"
-          autoCapitalize="none"
-          error={errors.email?.message}
-          setLoading={setLoading}
-        />
-        <AnimatedInput
-          control={control}
-          name="password"
-          label="Password"
-          secureTextEntry={!showPassword}
-          error={errors.password?.message}
-          setLoading={setLoading}
-        />
-        <TouchableOpacity
-          className="flex-row items-center mb-4"
-          onPress={() => setShowPassword((prev) => !prev)}
-          accessibilityRole="checkbox"
-          accessibilityState={{checked: showPassword}}
-          testID="show-password-checkbox"
-        >
-          <View
-            className={`w-5 h-5 rounded border border-gray-400 mr-2 items-center justify-center ${
-              showPassword ? "bg-blue-100 border-primary" : "bg-white"
-            }`}
-          >
-            {showPassword && <View className="w-3 h-3 bg-primary rounded" />}
-          </View>
-          <Text className="text-base dark:text-white">Show password</Text>
-        </TouchableOpacity>
-        <AnimatedInput
-          control={control}
-          name="cf_password"
-          label="Confirm Password"
-          secureTextEntry={!showCf_password}
-          error={errors.cf_password?.message}
-          setLoading={setLoading}
-        />
-        <TouchableOpacity
-          className="flex-row items-center mb-4"
-          onPress={() => setShowCf_password((prev) => !prev)}
-          accessibilityRole="checkbox"
-          accessibilityState={{checked: showCf_password}}
-          testID="show-password-checkbox"
-        >
-          <View
-            className={`w-5 h-5 rounded border border-gray-400 mr-2 items-center justify-center ${
-              showCf_password ? "bg-blue-100 border-primary" : "bg-white"
-            }`}
-          >
-            {showCf_password && <View className="w-3 h-3 bg-primary rounded" />}
-          </View>
-          <Text className="text-base dark:text-white">
-            Show confirm password
-          </Text>
-        </TouchableOpacity>
-        <AnimatedButton
-          title="Sign Up"
-          state={loading}
-          onPress={handleSubmit(onSubmit)}
-        />
-        <View className="flex-row items-center">
-          <Checkbox
-            value={isTermsChecked}
-            onValueChange={(newValue) => {
-              setTermsChecked(newValue);
-            }}
-            color={isTermsChecked ? "#155dfc" : undefined}
-            className="mr-3"
-          />
-          <Text className="text-gray-400 text-md font-Poppins_500Medium flex-1 flex-wrap">
-            I agree to the{" "}
-            <Text
-              className="text-black dark:text-white underline"
-              onPress={() => handleLinkPress("terms")}
-            >
-              Terms of Service
-            </Text>{" "}
-            and acknowledge Captions&apos;{" "}
-            <Text
-              className="text-black dark:text-white underline"
-              onPress={() => handleLinkPress("privacy")}
-            >
-              Privacy Policy
+      <ScrollView
+        contentContainerStyle={{flexGrow: 1, justifyContent: "center"}}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View className="px-6">
+          <Animated.View entering={FadeInDown.delay(100)}>
+            <Text className="text-3xl font-bold text-gray-900 dark:text-white">
+              Get Started 👋
             </Text>
-          </Text>
-        </View>
-        <View className="flex-row justify-center mt-4">
-          <Text className="text-gray-600 dark:text-white">
-            Already have an account?{" "}
-          </Text>
-          <Link href="/login" asChild>
-            <TouchableOpacity>
-              <Text className="text-primary font-semibold">Sign In</Text>
+            <Text className="text-gray-500 mt-2">
+              Sign up to continue shopping
+            </Text>
+          </Animated.View>
+          <Animated.View entering={FadeInDown.delay(200)} className="mt-6">
+            <AnimatedInput
+              control={control}
+              name="firstName"
+              label="First Name"
+              keyboardType="default"
+              autoCapitalize="none"
+              error={errors.firstName?.message}
+              setLoading={setLoading}
+            />
+            <AnimatedInput
+              control={control}
+              name="lastName"
+              label="Last Name"
+              keyboardType="default"
+              autoCapitalize="none"
+              error={errors.lastName?.message}
+              setLoading={setLoading}
+            />
+            <AnimatedInput
+              control={control}
+              name="email"
+              label="Email Address"
+              keyboardType="email-address"
+              autoCapitalize="none"
+              error={errors.email?.message}
+              setLoading={setLoading}
+            />
+            <AnimatedInput
+              control={control}
+              name="password"
+              label="Password"
+              secureTextEntry={!showPassword}
+              error={errors.password?.message}
+              setLoading={setLoading}
+            />
+            <Pressable
+              className="flex-row items-center mb-4"
+              onPress={() => setShowPassword((prev) => !prev)}
+            >
+              <View
+                className={`w-5 h-5 rounded border mr-2 items-center justify-center ${
+                  showPassword
+                    ? "bg-blue-500 border-blue-500"
+                    : "border-gray-400"
+                }`}
+              />
+              <Text className="text-gray-600 dark:text-white">
+                Show password
+              </Text>
+            </Pressable>
+            <AnimatedInput
+              control={control}
+              name="cf_password"
+              label="Confirm Password"
+              secureTextEntry={!showCf_password}
+              error={errors.cf_password?.message}
+              setLoading={setLoading}
+            />
+            <TouchableOpacity
+              className="flex-row items-center mb-4"
+              onPress={() => setShowCf_password((prev) => !prev)}
+            >
+              <View
+                className={`w-5 h-5 rounded border mr-2 items-center justify-center ${
+                  showCf_password
+                    ? "bg-blue-500 border-blue-500"
+                    : "border-gray-400"
+                }`}
+              />
+              <Text className="text-gray-600 dark:text-white">
+                Show confirm password
+              </Text>
             </TouchableOpacity>
-          </Link>
+            <AnimatedButton
+              title="Sign Up"
+              state={loading}
+              onPress={handleSubmit(onSubmit)}
+            />
+          </Animated.View>
+          <Animated.View
+            entering={FadeInDown.delay(300)}
+            className="mt-6 items-center gap-3"
+          >
+            <View className="flex-row items-center">
+              <Checkbox
+                value={isTermsChecked}
+                onValueChange={(newValue) => {
+                  setTermsChecked(newValue);
+                }}
+                color={isTermsChecked ? "#155dfc" : undefined}
+                className="mr-3"
+              />
+              <Text className="text-gray-400 text-md font-Poppins_500Medium flex-1 flex-wrap">
+                I agree to the{" "}
+                <Text
+                  className="text-black dark:text-white underline"
+                  onPress={() => handleLinkPress("terms")}
+                >
+                  Terms of Service
+                </Text>{" "}
+                and acknowledge Captions&apos;{" "}
+                <Text
+                  className="text-black dark:text-white underline"
+                  onPress={() => handleLinkPress("privacy")}
+                >
+                  Privacy Policy
+                </Text>
+              </Text>
+            </View>
+            <View className="flex-row mt-4">
+              <Text className="text-gray-600 dark:text-white">
+                Already have an account?{" "}
+              </Text>
+              <Link href="/login" asChild>
+                <TouchableOpacity>
+                  <Text className="text-primary font-semibold">Sign In</Text>
+                </TouchableOpacity>
+              </Link>
+            </View>
+          </Animated.View>
         </View>
-      </View>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 };

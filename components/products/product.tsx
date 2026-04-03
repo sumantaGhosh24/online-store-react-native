@@ -33,9 +33,12 @@ export interface ProductProps {
   price: number;
   stock?: number;
   sold?: number;
-  _creationTime?: any;
   loading: boolean;
   index: number;
+  reviews: {
+    count: number;
+    average: number;
+  };
 }
 
 const Product = memo(
@@ -48,9 +51,9 @@ const Product = memo(
     price,
     stock,
     sold,
-    _creationTime,
     loading,
     index,
+    reviews,
   }: ProductProps) => {
     const [deleteLoading, setDeleteLoading] = useState(false);
 
@@ -78,12 +81,12 @@ const Product = memo(
                   ToastAndroid.LONG,
                   ToastAndroid.BOTTOM,
                   25,
-                  50
+                  50,
                 );
               },
               style: "destructive",
             },
-          ]
+          ],
         );
       } catch (error: any) {
         ToastAndroid.showWithGravityAndOffset(
@@ -91,7 +94,7 @@ const Product = memo(
           ToastAndroid.LONG,
           ToastAndroid.BOTTOM,
           25,
-          50
+          50,
         );
       } finally {
         setDeleteLoading(false);
@@ -101,60 +104,53 @@ const Product = memo(
     return (
       <AnimatedListItem index={index}>
         <ShimmerPlaceholder
-          width={60}
-          height={60}
-          shimmerStyle={{borderRadius: 30}}
+          width={80}
+          height={80}
+          shimmerStyle={{borderRadius: 16}}
           visible={!loading}
         >
           <Image
-            source={{uri: imageUrls[0]}}
-            className="h-16 w-16 rounded-full"
+            source={{uri: imageUrls?.[0]}}
+            className="h-20 w-20 rounded-2xl"
           />
         </ShimmerPlaceholder>
-        <View className="flex-1 gap-1.5">
-          <ShimmerPlaceholder width={140} height={20} visible={!loading}>
-            <Text className="text-xs font-bold dark:text-white">{_id}</Text>
-          </ShimmerPlaceholder>
-          <ShimmerPlaceholder width={140} height={20} visible={!loading}>
-            <Text className="text-lg capitalize font-bold dark:text-white">
+        <View className="flex-1 ml-3 justify-between">
+          <ShimmerPlaceholder width={160} height={18} visible={!loading}>
+            <Text
+              numberOfLines={1}
+              className="text-base font-bold text-gray-800 dark:text-white"
+            >
               {title}
             </Text>
-            <Text className="text-base font-bold dark:text-white">
+          </ShimmerPlaceholder>
+          <ShimmerPlaceholder width={180} height={14} visible={!loading}>
+            <Text
+              numberOfLines={2}
+              className="text-xs text-gray-500 dark:text-white"
+            >
               {description}
             </Text>
           </ShimmerPlaceholder>
-          <View className="flex flex-row items-center gap-3">
-            <ShimmerPlaceholder width={50} height={20} visible={!loading}>
-              <Text className="dark:text-white font-bold">{category.name}</Text>
-            </ShimmerPlaceholder>
-            <ShimmerPlaceholder width={50} height={20} visible={!loading}>
-              <Text className="dark:text-white font-bold">₹ {price}</Text>
-            </ShimmerPlaceholder>
-            <ShimmerPlaceholder width={50} height={20} visible={!loading}>
-              <Text className="dark:text-white font-bold">{stock}</Text>
-            </ShimmerPlaceholder>
-            <ShimmerPlaceholder width={50} height={20} visible={!loading}>
-              <Text className="dark:text-white font-bold">{sold}</Text>
-            </ShimmerPlaceholder>
+          <View className="flex-row items-center justify-between mt-1">
+            <Text className="text-xs font-semibold text-primary">
+              {category?.name}
+            </Text>
+            <Text className="text-lg font-bold text-primary">₹{price}</Text>
           </View>
-          <ShimmerPlaceholder
-            width={75}
-            height={20}
-            style={{marginBottom: 5}}
-            visible={!loading}
-          >
-            <View className="flex flex-row items-center gap-1">
-              <Ionicons
-                name="refresh-circle"
-                size={14}
-                color={Colors.background}
-              />
-              <Text className="text-xs dark:text-white">
-                Created at:{" "}
-                {new Date(_creationTime as any).toLocaleDateString()}
-              </Text>
-            </View>
-          </ShimmerPlaceholder>
+          <View className="flex-row justify-between mt-1">
+            <Text className="text-xs text-gray-600 dark:text-white">
+              Stock: {stock ?? 0}
+            </Text>
+            <Text className="text-xs text-gray-600 dark:text-white">
+              Sold: {sold ?? 0}
+            </Text>
+            <Text className="text-xs text-yellow-500">
+              ⭐ {reviews?.average ?? 0} ({reviews?.count ?? 0})
+            </Text>
+            {stock !== undefined && stock < 5 && (
+              <Text className="text-[10px] text-red-500">Low stock</Text>
+            )}
+          </View>
         </View>
         <View>
           <DropdownMenu.Root>
@@ -164,13 +160,6 @@ const Product = memo(
               </TouchableOpacity>
             </DropdownMenu.Trigger>
             <DropdownMenu.Content>
-              <DropdownMenu.Item
-                key="view"
-                onSelect={() => router.push(`/product/details/${_id}`)}
-                disabled={loading || deleteLoading}
-              >
-                <DropdownMenu.ItemTitle>View</DropdownMenu.ItemTitle>
-              </DropdownMenu.Item>
               <DropdownMenu.Item
                 key="update"
                 onSelect={() => router.push(`/product/update/${_id}`)}
@@ -190,7 +179,7 @@ const Product = memo(
         </View>
       </AnimatedListItem>
     );
-  }
+  },
 );
 
 Product.displayName = "Product";

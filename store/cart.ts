@@ -14,19 +14,23 @@ interface Product {
 
 export interface CartState {
   products: Product[];
-  coupon: Id<"coupons"> | null;
-  count: number;
   addProduct: (productId: Id<"products">) => void;
   reduceProduct: (productId: Id<"products">) => void;
   removeProduct: (productId: Id<"products">) => void;
+  coupon: Id<"coupons"> | null;
   setCoupon: (couponId: Id<"coupons">) => void;
   removeCoupon: () => void;
+  address: Id<"addresses"> | null;
+  setAddress: (addressId: Id<"addresses">) => void;
+  removeAddress: () => void;
+  count: number;
   clearCart: () => void;
 }
 
 const INITIAL_STATE = {
   products: [],
   coupon: null,
+  address: null,
   count: 0,
 };
 
@@ -60,7 +64,7 @@ export const useCartStore = create(
         set((state) => {
           const products = state.products
             .map((a) =>
-              a._id === productId ? {...a, quantity: a.quantity - 1} : a
+              a._id === productId ? {...a, quantity: a.quantity - 1} : a,
             )
             .filter((a) => a.quantity > 0);
           const {count} = recalculate(products);
@@ -74,19 +78,11 @@ export const useCartStore = create(
           return {products, count};
         });
       },
-      setCoupon: (coupon) => {
-        set((state) => {
-          return {coupon};
-        });
-      },
-      removeCoupon: () => {
-        set((state) => {
-          return {coupon: null};
-        });
-      },
-      clearCart: () => {
-        set(INITIAL_STATE);
-      },
+      setCoupon: (coupon) => set({coupon}),
+      removeCoupon: () => set({coupon: null}),
+      setAddress: (address) => set({address}),
+      removeAddress: () => set({address: null}),
+      clearCart: () => set(INITIAL_STATE),
     }),
     {
       name: "cart",
@@ -98,6 +94,6 @@ export const useCartStore = create(
             getItem: (key: string) => SecureStore.getItemAsync(key),
             removeItem: (key: string) => SecureStore.deleteItemAsync(key),
           })),
-    }
-  )
+    },
+  ),
 );

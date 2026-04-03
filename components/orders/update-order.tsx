@@ -1,6 +1,6 @@
 import {useMutation} from "convex/react";
 import {useCallback, useState} from "react";
-import {ToastAndroid} from "react-native";
+import {ToastAndroid, View} from "react-native";
 
 import {api} from "@/convex/_generated/api";
 import {Id} from "@/convex/_generated/dataModel";
@@ -35,7 +35,7 @@ const UpdateOrder = ({id}: UpdateOrderProps) => {
         ToastAndroid.SHORT,
         ToastAndroid.BOTTOM,
         0,
-        100
+        100,
       );
     } catch (error: any) {
       setLoading("error");
@@ -44,17 +44,19 @@ const UpdateOrder = ({id}: UpdateOrderProps) => {
         ToastAndroid.SHORT,
         ToastAndroid.BOTTOM,
         0,
-        100
+        100,
       );
     }
   }, [id, updateOrder]);
 
   return (
-    <AnimatedButton
-      title="Delivered Order"
-      state={loading}
-      onPress={handleUpdateOrder}
-    />
+    <View className="px-3">
+      <AnimatedButton
+        title="Delivered Order"
+        state={loading}
+        onPress={handleUpdateOrder}
+      />
+    </View>
   );
 };
 

@@ -1,5 +1,5 @@
 import {useClerk, useUser} from "@clerk/clerk-expo";
-import {useCallback, useState} from "react";
+import {useCallback, useState, useEffect} from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -9,6 +9,12 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withSpring,
+} from "react-native-reanimated";
 
 import {useAuthStore} from "@/store";
 
@@ -49,12 +55,12 @@ const DeleteUser = () => {
                 ToastAndroid.LONG,
                 ToastAndroid.BOTTOM,
                 25,
-                50
+                50,
               );
             },
             style: "destructive",
           },
-        ]
+        ],
       );
     } catch (error: any) {
       ToastAndroid.showWithGravityAndOffset(
@@ -62,39 +68,70 @@ const DeleteUser = () => {
         ToastAndroid.LONG,
         ToastAndroid.BOTTOM,
         25,
-        50
+        50,
       );
     } finally {
       setLoading(false);
     }
   }, [isLoaded, user, signOut, resetOnboarding]);
 
+  const scale = useSharedValue(0.9);
+  const opacity = useSharedValue(0);
+  const btnScale = useSharedValue(1);
+
+  useEffect(() => {
+    scale.value = withSpring(1);
+    opacity.value = withTiming(1, {duration: 400});
+  }, [opacity, scale]);
+
+  const containerStyle = useAnimatedStyle(() => ({
+    transform: [{scale: scale.value}],
+    opacity: opacity.value,
+  }));
+
+  const btnStyle = useAnimatedStyle(() => ({
+    transform: [{scale: btnScale.value}],
+  }));
+
   return (
-    <View className="flex-1 items-center justify-center px-2">
-      <View className="dark:bg-white rounded-full h-24 w-24 items-center justify-center">
-        <Image
-          source={require("@/assets/images/adaptive-icon.png")}
-          className="w-24 h-24 mb-4"
-        />
-      </View>
-      <Text className="text-2xl font-bold mb-2 dark:text-white">
-        Delete User
-      </Text>
-      <Text className="text-lg mb-2 dark:text-white text-center">
-        This action is irreversible. Are you sure you want to delete your
-        account? This action cannot be undone. Please be careful.
-      </Text>
-      <TouchableOpacity
-        className="bg-red-500 rounded-full p-3 items-center mb-4 disabled:bg-blue-300"
-        onPress={handleDeleteUser}
-        disabled={loading}
+    <View className="flex-1 justify-center items-center px-5">
+      <Animated.View
+        style={containerStyle}
+        className="bg-white dark:bg-gray-900 rounded-3xl p-6 w-full items-center shadow-lg"
       >
-        {loading ? (
-          <ActivityIndicator color="white" />
-        ) : (
-          <Text className="text-lg font-medium text-white">Delete User</Text>
-        )}
-      </TouchableOpacity>
+        <View className="bg-red-100 dark:bg-red-900 rounded-full h-24 w-24 items-center justify-center mb-4">
+          <Image
+            source={require("@/assets/images/adaptive-icon.png")}
+            className="w-16 h-16"
+          />
+        </View>
+        <Text className="text-2xl font-bold mb-2 text-red-500">
+          Delete Account
+        </Text>
+        <Text className="text-base text-gray-600 dark:text-gray-300 text-center leading-6 mb-6">
+          This action is permanent and cannot be undone. All your data will be
+          permanently removed. Please confirm before proceeding.
+        </Text>
+        <Animated.View style={btnStyle} className="w-full">
+          <TouchableOpacity
+            onPressIn={() => (btnScale.value = withSpring(0.95))}
+            onPressOut={() => (btnScale.value = withSpring(1))}
+            onPress={handleDeleteUser}
+            disabled={loading}
+            className={`w-full py-3 rounded-xl items-center ${
+              loading ? "bg-red-300" : "bg-red-500"
+            }`}
+          >
+            {loading ? (
+              <ActivityIndicator color="white" />
+            ) : (
+              <Text className="text-white font-semibold text-lg">
+                Delete Account
+              </Text>
+            )}
+          </TouchableOpacity>
+        </Animated.View>
+      </Animated.View>
     </View>
   );
 };

@@ -42,7 +42,7 @@ const AddProductReview = memo(({id}: AddProductReviewProps) => {
     resolver: zodResolver(createRatingSchema),
     defaultValues: {
       comment: "",
-      rating: "0",
+      rating: "1",
     },
   });
 
@@ -72,7 +72,7 @@ const AddProductReview = memo(({id}: AddProductReviewProps) => {
           ToastAndroid.SHORT,
           ToastAndroid.BOTTOM,
           0,
-          100
+          100,
         );
       } catch (error: any) {
         setLoading("error");
@@ -81,16 +81,16 @@ const AddProductReview = memo(({id}: AddProductReviewProps) => {
           ToastAndroid.SHORT,
           ToastAndroid.BOTTOM,
           0,
-          100
+          100,
         );
       }
     },
-    [createReview, id, reset]
+    [createReview, id, reset],
   );
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
       className="mt-5"
     >
       <View>

@@ -16,7 +16,7 @@ const Orders = () => {
   const {results, status, loadMore, isLoading} = usePaginatedQuery(
     api.orders.getPaginatedOrders,
     {},
-    {initialNumItems: PAGINATION_MAX_COUNT}
+    {initialNumItems: PAGINATION_MAX_COUNT},
   );
 
   const hasMore = status === "CanLoadMore";
@@ -24,9 +24,7 @@ const Orders = () => {
   return (
     <FlatList
       data={results}
-      renderItem={({item, index}) => (
-        <Order {...item} loading={isLoading} index={index} />
-      )}
+      renderItem={({item, index}) => <Order {...item} index={index} />}
       keyExtractor={(item) => item._id.toString()}
       contentContainerStyle={{paddingBottom: 20}}
       ListFooterComponent={() =>
@@ -47,9 +45,9 @@ const Orders = () => {
       ListEmptyComponent={() => (
         <EmptyState
           title="No orders found"
-          subtitle="Go to cart"
-          buttonTitle="Create"
-          handlePress={() => router.push("/cart")}
+          subtitle="New orders will show up here"
+          buttonTitle="Dashboard"
+          handlePress={() => router.push("/dashboard")}
         />
       )}
     />

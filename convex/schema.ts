@@ -11,16 +11,23 @@ export default defineSchema({
     username: v.optional(v.string()),
     dob: v.optional(v.string()),
     gender: v.optional(v.string()),
-    city: v.optional(v.string()),
-    state: v.optional(v.string()),
-    country: v.optional(v.string()),
-    zip: v.optional(v.string()),
-    addressline: v.optional(v.string()),
     role: v.optional(v.union(v.literal("user"), v.literal("admin"))),
     customerId: v.optional(v.string()),
   })
     .index("by_email", ["email"])
     .index("by_externalId", ["externalId"]),
+
+  addresses: defineTable({
+    name: v.string(),
+    user: v.id("users"),
+    city: v.string(),
+    state: v.string(),
+    country: v.string(),
+    zip: v.string(),
+    addressline: v.string(),
+  })
+    .index("by_name_user", ["name", "user"])
+    .index("by_user", ["user"]),
 
   categories: defineTable({
     name: v.string(),
@@ -74,7 +81,7 @@ export default defineSchema({
           categoryId: v.id("categories"),
         }),
         quantity: v.number(),
-      })
+      }),
     ),
     coupon: v.object({
       _id: v.string(),
@@ -94,7 +101,7 @@ export default defineSchema({
       v.literal("pending"),
       v.literal("completed"),
       v.literal("cancelled"),
-      v.literal("refund")
+      v.literal("refund"),
     ),
     paymentId: v.string(),
     price: v.number(),

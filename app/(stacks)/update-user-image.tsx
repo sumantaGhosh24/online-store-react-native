@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import Animated, {FadeInDown} from "react-native-reanimated";
 
 import {api} from "@/convex/_generated/api";
 
@@ -41,7 +42,7 @@ const UpdateUserImage = () => {
           ToastAndroid.LONG,
           ToastAndroid.BOTTOM,
           25,
-          50
+          50,
         );
         return;
       }
@@ -56,7 +57,7 @@ const UpdateUserImage = () => {
           ToastAndroid.LONG,
           ToastAndroid.BOTTOM,
           25,
-          50
+          50,
         );
         return;
       }
@@ -95,7 +96,7 @@ const UpdateUserImage = () => {
           ToastAndroid.LONG,
           ToastAndroid.BOTTOM,
           25,
-          50
+          50,
         );
       } catch (error: any) {
         ToastAndroid.showWithGravityAndOffset(
@@ -103,63 +104,62 @@ const UpdateUserImage = () => {
           ToastAndroid.LONG,
           ToastAndroid.BOTTOM,
           25,
-          50
+          50,
         );
       } finally {
         setLoading(false);
       }
     },
-    [generateUploadUrl, updateUserImage, user]
+    [generateUploadUrl, updateUserImage, user],
   );
 
   return (
-    <View>
-      <Text className="text-2xl font-bold mb-2 dark:text-white">
-        Update User Image
-      </Text>
-      {/* @ts-ignore */}
-      {image && image.uri && (
-        <View>
-          <Image
-            // @ts-ignore
-            source={{uri: image?.uri}}
-            className="h-[250px] w-full rounded mb-4"
-          />
-        </View>
-      )}
-      <TouchableOpacity
-        className="bg-primary rounded-full py-3 items-center mb-4 disabled:bg-blue-300"
-        onPress={() => selectImage("library")}
-        disabled={loading}
-      >
-        {loading ? (
-          <ActivityIndicator color="white" />
-        ) : (
-          <Text className="text-lg font-medium text-white">Open Media</Text>
+    <View className="px-5 py-4">
+      <Animated.View entering={FadeInDown.delay(200)} className="mt-6">
+        {/* @ts-ignore */}
+        {image && image.uri && (
+          <View className="items-center mb-6">
+            <Image
+              // @ts-ignore
+              source={{uri: image?.uri}}
+              className="h-48 w-48 rounded-full border-4 border-white shadow-lg"
+            />
+          </View>
         )}
-      </TouchableOpacity>
-      <TouchableOpacity
-        className="bg-primary rounded-full py-3 items-center mb-4 disabled:bg-blue-300"
-        onPress={() => selectImage("camera")}
-        disabled={loading}
-      >
-        {loading ? (
-          <ActivityIndicator color="white" />
-        ) : (
-          <Text className="text-lg font-medium text-white">Open Camera</Text>
-        )}
-      </TouchableOpacity>
-      <TouchableOpacity
-        className="bg-primary rounded-full py-3 items-center mb-4 disabled:bg-blue-300"
-        onPress={() => uploadImageToClerk(image as any)}
-        disabled={loading}
-      >
-        {loading ? (
-          <ActivityIndicator color="white" />
-        ) : (
-          <Text className="text-lg font-medium text-white">Update Image</Text>
-        )}
-      </TouchableOpacity>
+        <TouchableOpacity
+          className="bg-primary rounded-full py-3 items-center mb-4 disabled:bg-blue-300"
+          onPress={() => selectImage("library")}
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator color="white" />
+          ) : (
+            <Text className="text-lg font-medium text-white">Open Media</Text>
+          )}
+        </TouchableOpacity>
+        <TouchableOpacity
+          className="bg-primary rounded-full py-3 items-center mb-4 disabled:bg-blue-300"
+          onPress={() => selectImage("camera")}
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator color="white" />
+          ) : (
+            <Text className="text-lg font-medium text-white">Open Camera</Text>
+          )}
+        </TouchableOpacity>
+        <TouchableOpacity
+          className="bg-primary rounded-full py-3 items-center mb-4 disabled:bg-blue-300"
+          onPress={() => uploadImageToClerk(image as any)}
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator color="white" />
+          ) : (
+            <Text className="text-lg font-medium text-white">Update Image</Text>
+          )}
+        </TouchableOpacity>
+      </Animated.View>
     </View>
   );
 };

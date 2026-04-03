@@ -15,6 +15,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import Animated, {FadeInDown} from "react-native-reanimated";
 import {z} from "zod";
 
 import AnimatedButton from "@/components/ui/animated-button";
@@ -40,6 +41,7 @@ const createProductSchema = z.object({
       return !isNaN(num);
     }, "Stock must be a number"),
 });
+
 type CreateProductForm = z.infer<typeof createProductSchema>;
 
 const CreateProduct = () => {
@@ -98,7 +100,7 @@ const CreateProduct = () => {
           ToastAndroid.LONG,
           ToastAndroid.BOTTOM,
           25,
-          50
+          50,
         );
         return;
       }
@@ -113,7 +115,7 @@ const CreateProduct = () => {
           ToastAndroid.LONG,
           ToastAndroid.BOTTOM,
           25,
-          50
+          50,
         );
         return;
       }
@@ -134,7 +136,7 @@ const CreateProduct = () => {
           ToastAndroid.LONG,
           ToastAndroid.BOTTOM,
           25,
-          50
+          50,
         );
       if (category === "")
         return ToastAndroid.showWithGravityAndOffset(
@@ -142,7 +144,7 @@ const CreateProduct = () => {
           ToastAndroid.LONG,
           ToastAndroid.BOTTOM,
           25,
-          50
+          50,
         );
 
       setLoading("loading");
@@ -179,7 +181,7 @@ const CreateProduct = () => {
           ToastAndroid.SHORT,
           ToastAndroid.BOTTOM,
           0,
-          100
+          100,
         );
       } catch (error: any) {
         setLoading("error");
@@ -188,111 +190,113 @@ const CreateProduct = () => {
           ToastAndroid.SHORT,
           ToastAndroid.BOTTOM,
           0,
-          100
+          100,
         );
       }
     },
-    [image, category, generateUploadUrl, createProduct, reset]
+    [image, category, generateUploadUrl, createProduct, reset],
   );
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      className="px-3 mt-5"
-      style={{flex: 1}}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      className="flex-1 px-6"
     >
       <ScrollView>
-        <Text className="text-2xl font-bold mb-5 dark:text-white">
-          Create Product
-        </Text>
-        {image && (
-          <View>
-            <Image
-              source={{uri: image?.uri}}
-              className="h-[250px] w-full rounded mb-4"
-            />
+        <Animated.View entering={FadeInDown.delay(200)} className="mt-6">
+          {image && (
+            <View>
+              <Image
+                source={{uri: image?.uri}}
+                className="h-[250px] w-full rounded mb-4"
+              />
+            </View>
+          )}
+          <View className="flex flex-row items-center justify-between">
+            <TouchableOpacity
+              className="bg-primary rounded-full p-3 items-center mb-4 disabled:bg-blue-300 w-1/3"
+              onPress={() => selectImage("library")}
+              disabled={loading === "loading"}
+            >
+              {loading === "loading" ? (
+                <ActivityIndicator color="white" />
+              ) : (
+                <Text className="text-lg font-medium text-white">
+                  Open Media
+                </Text>
+              )}
+            </TouchableOpacity>
+            <TouchableOpacity
+              className="bg-primary rounded-full p-3 items-center mb-4 disabled:bg-blue-300 w-1/3"
+              onPress={() => selectImage("camera")}
+              disabled={loading === "loading"}
+            >
+              {loading === "loading" ? (
+                <ActivityIndicator color="white" />
+              ) : (
+                <Text className="text-lg font-medium text-white">
+                  Open Camera
+                </Text>
+              )}
+            </TouchableOpacity>
           </View>
-        )}
-        <View className="flex flex-row items-center justify-between">
-          <TouchableOpacity
-            className="bg-primary rounded-full p-3 items-center mb-4 disabled:bg-blue-300 w-1/3"
-            onPress={() => selectImage("library")}
-            disabled={loading === "loading"}
+        </Animated.View>
+        <Animated.View entering={FadeInDown.delay(300)} className="mt-6">
+          <AnimatedInput
+            control={control}
+            name="title"
+            label="Product Title"
+            keyboardType="default"
+            autoCapitalize="none"
+            error={errors.title?.message}
+            setLoading={setLoading}
+          />
+          <AnimatedInput
+            control={control}
+            name="description"
+            label="Product Description"
+            keyboardType="default"
+            autoCapitalize="none"
+            multiline
+            numberOfLines={10}
+            textAlignVertical="top"
+            error={errors.title?.message}
+            setLoading={setLoading}
+          />
+          <AnimatedInput
+            control={control}
+            name="price"
+            label="Product Price"
+            keyboardType="numeric"
+            autoCapitalize="none"
+            error={errors.price?.message}
+            setLoading={setLoading}
+          />
+          <AnimatedInput
+            control={control}
+            name="stock"
+            label="Product Stock"
+            keyboardType="numeric"
+            autoCapitalize="none"
+            error={errors.stock?.message}
+            setLoading={setLoading}
+          />
+          <Text className="text-lg font-bold mt-3 mb-1.5 dark:text-white">
+            Product category
+          </Text>
+          <Picker
+            selectedValue={category}
+            onValueChange={(itemValue) => setCategory(itemValue)}
           >
-            {loading === "loading" ? (
-              <ActivityIndicator color="white" />
-            ) : (
-              <Text className="text-lg font-medium text-white">Open Media</Text>
-            )}
-          </TouchableOpacity>
-          <TouchableOpacity
-            className="bg-primary rounded-full p-3 items-center mb-4 disabled:bg-blue-300 w-1/3"
-            onPress={() => selectImage("camera")}
-            disabled={loading === "loading"}
-          >
-            {loading === "loading" ? (
-              <ActivityIndicator color="white" />
-            ) : (
-              <Text className="text-lg font-medium text-white">
-                Open Camera
-              </Text>
-            )}
-          </TouchableOpacity>
-        </View>
-        <AnimatedInput
-          control={control}
-          name="title"
-          label="Product Title"
-          keyboardType="default"
-          autoCapitalize="none"
-          error={errors.title?.message}
-          setLoading={setLoading}
-        />
-        <AnimatedInput
-          control={control}
-          name="description"
-          label="Product Description"
-          keyboardType="default"
-          autoCapitalize="none"
-          multiline
-          numberOfLines={10}
-          textAlignVertical="top"
-          error={errors.title?.message}
-          setLoading={setLoading}
-        />
-        <AnimatedInput
-          control={control}
-          name="price"
-          label="Product Price"
-          keyboardType="numeric"
-          autoCapitalize="none"
-          error={errors.price?.message}
-          setLoading={setLoading}
-        />
-        <AnimatedInput
-          control={control}
-          name="stock"
-          label="Product Stock"
-          keyboardType="numeric"
-          autoCapitalize="none"
-          error={errors.stock?.message}
-          setLoading={setLoading}
-        />
-        <Text className="text-lg font-bold mt-3 mb-1.5 dark:text-white">
-          Product category
-        </Text>
-        <Picker
-          selectedValue={category}
-          onValueChange={(itemValue) => setCategory(itemValue)}
-        >
-          <Picker.Item label="All" value="" />
-          {categoryItems}
-        </Picker>
-        <AnimatedButton
-          title="Create Product"
-          state={loading}
-          onPress={handleSubmit(onSubmit)}
-        />
+            <Picker.Item label="All" value="" />
+            {categoryItems}
+          </Picker>
+          <AnimatedButton
+            title="Create Product"
+            state={loading}
+            onPress={handleSubmit(onSubmit)}
+          />
+        </Animated.View>
       </ScrollView>
     </KeyboardAvoidingView>
   );

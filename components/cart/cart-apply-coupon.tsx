@@ -17,7 +17,7 @@ import {Id} from "@/convex/_generated/dataModel";
 import {useCartStore} from "@/store/cart";
 
 const couponSchema = z.object({
-  code: z.string(),
+  code: z.string().min(1),
 });
 type CouponForm = z.infer<typeof couponSchema>;
 
@@ -70,7 +70,7 @@ const CartApplyCoupon = ({total}: CartApplyCouponProps) => {
         ToastAndroid.SHORT,
         ToastAndroid.BOTTOM,
         0,
-        100
+        100,
       );
     } catch (error: any) {
       ToastAndroid.showWithGravityAndOffset(
@@ -78,7 +78,7 @@ const CartApplyCoupon = ({total}: CartApplyCouponProps) => {
         ToastAndroid.SHORT,
         ToastAndroid.BOTTOM,
         0,
-        100
+        100,
       );
     } finally {
       setLoading(false);
@@ -87,37 +87,40 @@ const CartApplyCoupon = ({total}: CartApplyCouponProps) => {
 
   return (
     <View className="p-4 pt-10 mb-3 bg-white dark:bg-gray-800">
-      <Controller
-        control={control}
-        name="code"
-        render={({field: {onChange, onBlur, value}}) => (
-          <TextInput
-            className="border border-gray-300 rounded-md px-3 py-2 mb-2 bg-white placeholder:text-black dark:bg-gray-700 dark:border-0 dark:placeholder:text-white dark:text-white"
-            value={value}
-            onChangeText={onChange}
-            onBlur={onBlur}
-            placeholder="Enter coupon code"
-            keyboardType="default"
-            autoCapitalize="none"
-          />
-        )}
-      />
+      <Text className="text-base font-semibold mb-2 dark:text-white">
+        Apply Coupon
+      </Text>
+      <View className="flex-row items-center gap-2">
+        <Controller
+          control={control}
+          name="code"
+          render={({field: {onChange, onBlur, value}}) => (
+            <TextInput
+              className="flex-1 border border-gray-300 dark:border-gray-600 rounded-xl px-3 py-2 bg-gray-50 dark:bg-gray-700 dark:text-white"
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+              placeholder="Enter code"
+              placeholderTextColor="#9CA3AF"
+              autoCapitalize="characters"
+            />
+          )}
+        />
+        <TouchableOpacity
+          onPress={handleSubmit(onSubmit)}
+          disabled={loading}
+          className="bg-primary px-4 py-2 rounded-xl justify-center items-center disabled:bg-blue-300"
+        >
+          {loading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text className="text-white font-semibold">Apply</Text>
+          )}
+        </TouchableOpacity>
+      </View>
       {errors.code && (
-        <Text className="text-red-500 mb-2">{errors.code.message}</Text>
+        <Text className="text-red-500 text-xs mt-2">{errors.code.message}</Text>
       )}
-      <TouchableOpacity
-        className="bg-primary rounded-full py-3 items-center mb-4 disabled:bg-blue-300"
-        onPress={handleSubmit(onSubmit)}
-        disabled={loading}
-      >
-        {loading ? (
-          <ActivityIndicator color="white" />
-        ) : (
-          <Text className="text-lg font-medium text-white">
-            Validate Coupon
-          </Text>
-        )}
-      </TouchableOpacity>
     </View>
   );
 };

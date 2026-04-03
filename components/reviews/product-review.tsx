@@ -5,6 +5,7 @@ import {Image, Text, View} from "react-native";
 import {createShimmerPlaceholder} from "react-native-shimmer-placeholder";
 
 import {Colors} from "@/constant/colors";
+
 import AnimatedListItem from "../ui/animated-list-item";
 
 const ShimmerPlaceholder = createShimmerPlaceholder(LinearGradient);
@@ -27,7 +28,7 @@ const ProductReview = memo(
   ({user, comment, rating, _creationTime, loading, index}: ReviewProps) => {
     return (
       <AnimatedListItem index={index}>
-        <View className="px-5 py-3 bg-gray-200 dark:bg-gray-800 mx-3 my-2 rounded-md">
+        <View className="w-full">
           <View className="flex flex-row items-center gap-4 mb-3">
             <ShimmerPlaceholder
               width={60}
@@ -37,15 +38,15 @@ const ProductReview = memo(
             >
               <Image
                 source={{uri: user.image}}
-                className="h-16 w-16 rounded-full"
+                className="h-12 w-12 rounded-full"
               />
             </ShimmerPlaceholder>
             <View>
               <ShimmerPlaceholder width={140} height={20} visible={!loading}>
-                <Text className="text-xl capitalize font-bold dark:text-white">
+                <Text className="text-lg capitalize font-bold dark:text-white">
                   {user.name}
                 </Text>
-                <Text className="text-lg dark:text-white">
+                <Text className="text-md dark:text-white">
                   @{user.username}
                 </Text>
               </ShimmerPlaceholder>
@@ -89,7 +90,7 @@ const ProductReview = memo(
         </View>
       </AnimatedListItem>
     );
-  }
+  },
 );
 
 ProductReview.displayName = "ProductReview";

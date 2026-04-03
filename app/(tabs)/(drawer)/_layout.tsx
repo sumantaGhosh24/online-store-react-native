@@ -4,22 +4,26 @@ import {
   DrawerItem,
   DrawerItemList,
 } from "@react-navigation/drawer";
-import {useQuery} from "convex/react";
-import {Stack} from "expo-router";
 import {Drawer} from "expo-router/drawer";
 import {Alert, ToastAndroid} from "react-native";
 import {GestureHandlerRootView} from "react-native-gesture-handler";
+import {useQuery} from "convex/react";
+import {Stack} from "expo-router";
 
-import DropdownPlus from "@/components/ui/dropdown-plus";
 import {Colors} from "@/constant/colors";
 import {api} from "@/convex/_generated/api";
+import DropdownPlus from "@/components/ui/dropdown-plus";
 
 const DrawerLayout = () => {
-  const {signOut} = useClerk();
-
   const user = useQuery(api.users.getUser);
 
-  const isAdmin = user?.role === "admin";
+  const {signOut} = useClerk();
+
+  if (user === undefined) {
+    return null;
+  }
+
+  const isAdmin = user.role === "admin";
 
   const handleSignOut = async () => {
     try {
@@ -42,12 +46,12 @@ const DrawerLayout = () => {
                 ToastAndroid.LONG,
                 ToastAndroid.BOTTOM,
                 25,
-                50
+                50,
               );
             },
           },
         ],
-        {cancelable: true}
+        {cancelable: true},
       );
     } catch (error: any) {
       ToastAndroid.showWithGravityAndOffset(
@@ -55,7 +59,7 @@ const DrawerLayout = () => {
         ToastAndroid.LONG,
         ToastAndroid.BOTTOM,
         25,
-        50
+        50,
       );
     }
   };
@@ -74,17 +78,32 @@ const DrawerLayout = () => {
         }}
         screenOptions={{
           headerStyle: {backgroundColor: Colors.background},
-          headerTitleStyle: {color: "white"},
+          headerTintColor: "#fff",
         }}
       >
         <Drawer.Screen
           name="home"
           options={{drawerLabel: "Home", title: "Home"}}
         />
+        <Drawer.Screen
+          name="my-reviews"
+          options={{drawerLabel: "My Reviews", title: "My Reviews"}}
+        />
+        <Drawer.Screen
+          name="my-orders"
+          options={{drawerLabel: "My Orders", title: "My Orders"}}
+        />
+
         <Stack.Protected guard={isAdmin}>
           <Drawer.Screen
-            name="users"
-            options={{drawerLabel: "Manage Users", title: "Manage Users"}}
+            name="products"
+            options={{
+              drawerLabel: "Manage Products",
+              title: "Manage Products",
+              headerRight: () => (
+                <DropdownPlus text="Create Product" href="/product/create" />
+              ),
+            }}
           />
           <Drawer.Screen
             name="categories"
@@ -93,16 +112,6 @@ const DrawerLayout = () => {
               title: "Manage Categories",
               headerRight: () => (
                 <DropdownPlus text="Create Category" href="/category/create" />
-              ),
-            }}
-          />
-          <Drawer.Screen
-            name="products"
-            options={{
-              drawerLabel: "Manage Products",
-              title: "Manage Products",
-              headerRight: () => (
-                <DropdownPlus text="Create Product" href="/product/create" />
               ),
             }}
           />
@@ -125,14 +134,6 @@ const DrawerLayout = () => {
             options={{drawerLabel: "Manage Orders", title: "Manage Orders"}}
           />
         </Stack.Protected>
-        <Drawer.Screen
-          name="my-reviews"
-          options={{drawerLabel: "My Reviews", title: "My Reviews"}}
-        />
-        <Drawer.Screen
-          name="my-orders"
-          options={{drawerLabel: "My Orders", title: "My Orders"}}
-        />
       </Drawer>
     </GestureHandlerRootView>
   );

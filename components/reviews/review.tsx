@@ -1,6 +1,5 @@
 import {Ionicons} from "@expo/vector-icons";
 import {useMutation, useQuery} from "convex/react";
-import {LinearGradient} from "expo-linear-gradient";
 import {useCallback, useState} from "react";
 import {
   Alert,
@@ -10,7 +9,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import {createShimmerPlaceholder} from "react-native-shimmer-placeholder";
 import * as DropdownMenu from "zeego/dropdown-menu";
 
 import {Colors} from "@/constant/colors";
@@ -18,8 +16,6 @@ import {api} from "@/convex/_generated/api";
 import {Id} from "@/convex/_generated/dataModel";
 
 import AnimatedListItem from "../ui/animated-list-item";
-
-const ShimmerPlaceholder = createShimmerPlaceholder(LinearGradient);
 
 interface ReviewProps {
   _id: string;
@@ -36,7 +32,6 @@ interface ReviewProps {
   comment: string;
   rating: number;
   _creationTime?: any;
-  loading: boolean;
   index: number;
 }
 
@@ -47,7 +42,6 @@ const Review = ({
   comment,
   rating,
   _creationTime,
-  loading,
   index,
 }: ReviewProps) => {
   const currentUser = useQuery(api.users.getUser);
@@ -65,7 +59,7 @@ const Review = ({
         ToastAndroid.LONG,
         ToastAndroid.BOTTOM,
         25,
-        50
+        50,
       );
     }
 
@@ -90,12 +84,12 @@ const Review = ({
                 ToastAndroid.LONG,
                 ToastAndroid.BOTTOM,
                 25,
-                50
+                50,
               );
             },
             style: "destructive",
           },
-        ]
+        ],
       );
     } catch (error: any) {
       ToastAndroid.showWithGravityAndOffset(
@@ -103,7 +97,7 @@ const Review = ({
         ToastAndroid.LONG,
         ToastAndroid.BOTTOM,
         25,
-        50
+        50,
       );
     } finally {
       setDeleteLoading(false);
@@ -113,30 +107,18 @@ const Review = ({
   return (
     <AnimatedListItem index={index}>
       <View>
-        <View className="flex flex-row items-center justify-between gap-3">
-          <ShimmerPlaceholder
-            width={60}
-            height={60}
-            shimmerStyle={{borderRadius: 30}}
-            visible={!loading}
-          >
-            <Image
-              source={{uri: user.image}}
-              className="h-16 w-16 rounded-full"
-            />
-          </ShimmerPlaceholder>
+        <View className="flex flex-row items-center justify-between gap-3 w-full">
+          <Image
+            source={{uri: user.image}}
+            className="h-16 w-16 rounded-full"
+          />
           <View>
-            <ShimmerPlaceholder width={140} height={20} visible={!loading}>
-              <Text className="text-xs font-bold dark:text-white">{_id}</Text>
-            </ShimmerPlaceholder>
-            <ShimmerPlaceholder width={140} height={20} visible={!loading}>
-              <Text className="text-lg capitalize font-bold dark:text-white">
-                {user.name}
-              </Text>
-              <Text className="text-base dark:text-white">
-                Product: {product.title.substring(0, 30)}...
-              </Text>
-            </ShimmerPlaceholder>
+            <Text className="text-lg capitalize font-bold dark:text-white">
+              {user.name}
+            </Text>
+            <Text className="text-base dark:text-white">
+              Product: {product.title.substring(0, 25)}...
+            </Text>
           </View>
           {isAdmin && (
             <View>
@@ -154,7 +136,7 @@ const Review = ({
                   <DropdownMenu.Item
                     key="delete"
                     onSelect={() => handleDeleteReview()}
-                    disabled={loading || deleteLoading}
+                    disabled={deleteLoading}
                   >
                     <DropdownMenu.ItemTitle>Delete</DropdownMenu.ItemTitle>
                   </DropdownMenu.Item>
@@ -164,39 +146,27 @@ const Review = ({
           )}
         </View>
         <View className="flex-1 gap-1.5 mt-5">
-          <ShimmerPlaceholder width={50} height={20} visible={!loading}>
-            <Text className="text-base dark:text-white">{comment}</Text>
-          </ShimmerPlaceholder>
-          <ShimmerPlaceholder width={50} height={20} visible={!loading}>
-            <View className="flex flex-row items-center gap-1">
-              {Array.from({length: 5}, (_, i) => i + 1).map((star, index) => (
-                <Ionicons
-                  key={index}
-                  name={rating >= index ? "star" : "star-outline"}
-                  size={18}
-                  color={rating >= index ? "orange" : "gray"}
-                />
-              ))}
-            </View>
-          </ShimmerPlaceholder>
-          <ShimmerPlaceholder
-            width={75}
-            height={20}
-            style={{marginBottom: 5}}
-            visible={!loading}
-          >
-            <View className="flex flex-row items-center gap-3 mt-3">
+          <Text className="text-base dark:text-white">{comment}</Text>
+          <View className="flex flex-row items-center gap-1">
+            {Array.from({length: 5}, (_, i) => i + 1).map((star, index) => (
               <Ionicons
-                name="refresh-circle"
+                key={index}
+                name={rating >= index ? "star" : "star-outline"}
                 size={18}
-                color={Colors.background}
+                color={rating >= index ? "orange" : "gray"}
               />
-              <Text className="text-base dark:text-white">
-                Created at:{" "}
-                {new Date(_creationTime as any).toLocaleDateString()}
-              </Text>
-            </View>
-          </ShimmerPlaceholder>
+            ))}
+          </View>
+          <View className="flex flex-row items-center gap-3 mt-3">
+            <Ionicons
+              name="refresh-circle"
+              size={18}
+              color={Colors.background}
+            />
+            <Text className="text-base dark:text-white">
+              Created at: {new Date(_creationTime as any).toLocaleDateString()}
+            </Text>
+          </View>
         </View>
       </View>
     </AnimatedListItem>

@@ -2,13 +2,8 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import {useMutation} from "convex/react";
 import {useCallback, useState} from "react";
 import {useForm} from "react-hook-form";
-import {
-  KeyboardAvoidingView,
-  Platform,
-  Text,
-  ToastAndroid,
-  View,
-} from "react-native";
+import {KeyboardAvoidingView, Platform, ToastAndroid, View} from "react-native";
+import Animated, {FadeInDown} from "react-native-reanimated";
 import {z} from "zod";
 
 import AnimatedButton from "@/components/ui/animated-button";
@@ -36,6 +31,7 @@ const createCouponSchema = z
     message: "Discount cannot be greater than minimum cart price",
     path: ["discount"],
   });
+
 type CreateCouponForm = z.infer<typeof createCouponSchema>;
 
 const CreateCoupon = () => {
@@ -81,7 +77,7 @@ const CreateCoupon = () => {
           ToastAndroid.SHORT,
           ToastAndroid.BOTTOM,
           0,
-          100
+          100,
         );
       } catch (error: any) {
         setLoading("error");
@@ -90,63 +86,62 @@ const CreateCoupon = () => {
           ToastAndroid.SHORT,
           ToastAndroid.BOTTOM,
           0,
-          100
+          100,
         );
       }
     },
-    [createCoupon, reset]
+    [createCoupon, reset],
   );
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      className="px-3 mt-5"
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      className="flex-1"
     >
-      <View>
-        <Text className="text-2xl font-bold mb-5 dark:text-white">
-          Create Coupon
-        </Text>
-        <AnimatedInput
-          control={control}
-          name="name"
-          label="Coupon Name"
-          keyboardType="default"
-          autoCapitalize="none"
-          error={errors.name?.message}
-          setLoading={setLoading}
-        />
-        <AnimatedInput
-          control={control}
-          name="code"
-          label="Coupon Code"
-          keyboardType="default"
-          autoCapitalize="words"
-          error={errors.code?.message}
-          setLoading={setLoading}
-        />
-        <AnimatedInput
-          control={control}
-          name="discount"
-          label="Coupon Discount"
-          keyboardType="numeric"
-          autoCapitalize="none"
-          error={errors.discount?.message}
-          setLoading={setLoading}
-        />
-        <AnimatedInput
-          control={control}
-          name="minCartPrice"
-          label="Coupon Cart Minimum Price"
-          keyboardType="numeric"
-          autoCapitalize="none"
-          error={errors.minCartPrice?.message}
-          setLoading={setLoading}
-        />
-        <AnimatedButton
-          title="Create Coupon"
-          state={loading}
-          onPress={handleSubmit(onSubmit)}
-        />
+      <View className="px-6">
+        <Animated.View entering={FadeInDown.delay(300)} className="mt-6">
+          <AnimatedInput
+            control={control}
+            name="name"
+            label="Coupon Name"
+            keyboardType="default"
+            autoCapitalize="none"
+            error={errors.name?.message}
+            setLoading={setLoading}
+          />
+          <AnimatedInput
+            control={control}
+            name="code"
+            label="Coupon Code"
+            keyboardType="default"
+            autoCapitalize="words"
+            error={errors.code?.message}
+            setLoading={setLoading}
+          />
+          <AnimatedInput
+            control={control}
+            name="discount"
+            label="Coupon Discount"
+            keyboardType="numeric"
+            autoCapitalize="none"
+            error={errors.discount?.message}
+            setLoading={setLoading}
+          />
+          <AnimatedInput
+            control={control}
+            name="minCartPrice"
+            label="Coupon Cart Minimum Price"
+            keyboardType="numeric"
+            autoCapitalize="none"
+            error={errors.minCartPrice?.message}
+            setLoading={setLoading}
+          />
+          <AnimatedButton
+            title="Create Coupon"
+            state={loading}
+            onPress={handleSubmit(onSubmit)}
+          />
+        </Animated.View>
       </View>
     </KeyboardAvoidingView>
   );

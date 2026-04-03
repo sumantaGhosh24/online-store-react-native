@@ -62,12 +62,12 @@ const Coupon = ({
                 ToastAndroid.LONG,
                 ToastAndroid.BOTTOM,
                 25,
-                50
+                50,
               );
             },
             style: "destructive",
           },
-        ]
+        ],
       );
     } catch (error: any) {
       ToastAndroid.showWithGravityAndOffset(
@@ -75,7 +75,7 @@ const Coupon = ({
         ToastAndroid.LONG,
         ToastAndroid.BOTTOM,
         25,
-        50
+        50,
       );
     } finally {
       setDeleteLoading(false);
@@ -84,72 +84,88 @@ const Coupon = ({
 
   return (
     <AnimatedListItem index={index}>
-      <View className="flex-1 gap-1.5">
-        <ShimmerPlaceholder width={140} height={20} visible={!loading}>
-          <Text className="text-xs font-bold dark:text-white">{_id}</Text>
-        </ShimmerPlaceholder>
-        <ShimmerPlaceholder width={140} height={20} visible={!loading}>
-          <Text className="text-xl capitalize font-bold dark:text-white">
-            {name}
-          </Text>
-          <Text className="text-lg font-bold uppercase bg-primary text-white py-1 px-2 rounded-md">
-            {code}
-          </Text>
-        </ShimmerPlaceholder>
-        <View className="flex flex-row items-center gap-3">
-          <ShimmerPlaceholder width={50} height={20} visible={!loading}>
-            <Text className="dark:text-white text-base font-bold">
-              Discount: ₹{discount}
-            </Text>
-          </ShimmerPlaceholder>
-          <ShimmerPlaceholder width={50} height={20} visible={!loading}>
-            <Text className="dark:text-white text-base font-bold">
-              Minimum price: ₹{minCartPrice}
-            </Text>
-          </ShimmerPlaceholder>
+      <View className="w-full">
+        <View className="flex-row justify-between items-start">
+          <View className="flex-1 gap-1">
+            <ShimmerPlaceholder width={120} height={14} visible={!loading}>
+              <Text className="text-xs text-gray-500 dark:text-white">
+                {_id}
+              </Text>
+            </ShimmerPlaceholder>
+            <ShimmerPlaceholder width={160} height={20} visible={!loading}>
+              <Text className="text-lg font-semibold dark:text-white capitalize">
+                {name}
+              </Text>
+            </ShimmerPlaceholder>
+          </View>
+          <DropdownMenu.Root>
+            <DropdownMenu.Trigger>
+              <TouchableOpacity className="p-1">
+                <Ionicons
+                  name="ellipsis-vertical"
+                  size={20}
+                  color={Colors.background}
+                />
+              </TouchableOpacity>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Content>
+              <DropdownMenu.Item
+                key="update"
+                onSelect={() => router.push(`/coupon/update/${_id}`)}
+                disabled={loading || deleteLoading}
+              >
+                <DropdownMenu.ItemTitle>Update</DropdownMenu.ItemTitle>
+              </DropdownMenu.Item>
+              <DropdownMenu.Item
+                key="delete"
+                onSelect={() => handleDeleteCoupon()}
+                disabled={loading || deleteLoading}
+              >
+                <DropdownMenu.ItemTitle className="text-red-500">
+                  Delete
+                </DropdownMenu.ItemTitle>
+              </DropdownMenu.Item>
+            </DropdownMenu.Content>
+          </DropdownMenu.Root>
         </View>
-        <ShimmerPlaceholder
-          width={75}
-          height={20}
-          style={{marginBottom: 5}}
-          visible={!loading}
-        >
-          <View className="flex flex-row items-center gap-3">
-            <Ionicons
-              name="refresh-circle"
-              size={18}
-              color={Colors.background}
-            />
-            <Text className="text-base dark:text-white">
-              Created at: {new Date(_creationTime as any).toLocaleDateString()}
+        <ShimmerPlaceholder width={100} height={28} visible={!loading}>
+          <View className="self-start mt-2 bg-primary/10 px-3 py-1 rounded-full">
+            <Text className="text-primary font-semibold text-sm uppercase tracking-wide">
+              {code}
             </Text>
           </View>
         </ShimmerPlaceholder>
-      </View>
-      <View>
-        <DropdownMenu.Root>
-          <DropdownMenu.Trigger>
-            <TouchableOpacity>
-              <Ionicons name="settings" size={32} color={Colors.background} />
-            </TouchableOpacity>
-          </DropdownMenu.Trigger>
-          <DropdownMenu.Content>
-            <DropdownMenu.Item
-              key="update"
-              onSelect={() => router.push(`/coupon/update/${_id}`)}
-              disabled={loading || deleteLoading}
-            >
-              <DropdownMenu.ItemTitle>Update</DropdownMenu.ItemTitle>
-            </DropdownMenu.Item>
-            <DropdownMenu.Item
-              key="delete"
-              onSelect={() => handleDeleteCoupon()}
-              disabled={loading || deleteLoading}
-            >
-              <DropdownMenu.ItemTitle>Delete</DropdownMenu.ItemTitle>
-            </DropdownMenu.Item>
-          </DropdownMenu.Content>
-        </DropdownMenu.Root>
+        <View className="h-[1px] bg-gray-200 dark:bg-gray-800 my-3" />
+        <View className="flex-row justify-between">
+          <ShimmerPlaceholder width={100} height={20} visible={!loading}>
+            <View>
+              <Text className="text-xs text-gray-500 dark:text-white">
+                Discount
+              </Text>
+              <Text className="text-base font-bold text-green-600">
+                ₹{discount}
+              </Text>
+            </View>
+          </ShimmerPlaceholder>
+          <ShimmerPlaceholder width={120} height={20} visible={!loading}>
+            <View>
+              <Text className="text-xs text-gray-500 dark:text-white">
+                Min. Cart
+              </Text>
+              <Text className="text-base font-bold dark:text-white">
+                ₹{minCartPrice}
+              </Text>
+            </View>
+          </ShimmerPlaceholder>
+        </View>
+        <View className="mt-3 flex-row items-center gap-2">
+          <Ionicons name="calendar-outline" size={14} color="#9CA3AF" />
+          <ShimmerPlaceholder width={140} height={14} visible={!loading}>
+            <Text className="text-xs text-gray-500 dark:text-white">
+              Created: {new Date(_creationTime as any).toLocaleDateString()}
+            </Text>
+          </ShimmerPlaceholder>
+        </View>
       </View>
     </AnimatedListItem>
   );

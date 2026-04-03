@@ -16,7 +16,7 @@ const Users = () => {
   const {results, status, loadMore, isLoading} = usePaginatedQuery(
     api.users.getPaginatedUsers,
     {},
-    {initialNumItems: PAGINATION_MAX_COUNT}
+    {initialNumItems: PAGINATION_MAX_COUNT},
   );
 
   const hasMore = status === "CanLoadMore";
@@ -48,8 +48,8 @@ const Users = () => {
         <EmptyState
           title="No users found"
           subtitle="Try something else"
-          buttonTitle="Back"
-          handlePress={() => router.push("/")}
+          buttonTitle="Go Dashboard"
+          handlePress={() => router.push("/dashboard")}
         />
       )}
     />

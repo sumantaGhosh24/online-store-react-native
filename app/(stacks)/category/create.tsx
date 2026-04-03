@@ -13,6 +13,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import Animated, {FadeInDown} from "react-native-reanimated";
 import {z} from "zod";
 
 import AnimatedButton from "@/components/ui/animated-button";
@@ -64,7 +65,7 @@ const CreateCategory = () => {
           ToastAndroid.LONG,
           ToastAndroid.BOTTOM,
           25,
-          50
+          50,
         );
         return;
       }
@@ -79,7 +80,7 @@ const CreateCategory = () => {
           ToastAndroid.LONG,
           ToastAndroid.BOTTOM,
           25,
-          50
+          50,
         );
         return;
       }
@@ -100,7 +101,7 @@ const CreateCategory = () => {
           ToastAndroid.SHORT,
           ToastAndroid.BOTTOM,
           0,
-          100
+          100,
         );
         return;
       }
@@ -140,7 +141,7 @@ const CreateCategory = () => {
           ToastAndroid.SHORT,
           ToastAndroid.BOTTOM,
           0,
-          100
+          100,
         );
       } catch (error: any) {
         setLoading("error");
@@ -149,71 +150,74 @@ const CreateCategory = () => {
           ToastAndroid.SHORT,
           ToastAndroid.BOTTOM,
           0,
-          100
+          100,
         );
       }
     },
-    [image, generateUploadUrl, createCategory, reset]
+    [image, generateUploadUrl, createCategory, reset],
   );
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      className="flex-1 px-3 mt-5"
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      className="flex-1"
     >
-      <View className="flex-1">
-        <Text className="text-2xl font-bold mb-2 dark:text-white">
-          Create Category
-        </Text>
-        {image && (
-          <View className="mb-4">
-            <Image
-              source={{uri: image?.uri}}
-              className="h-[250px] w-full rounded"
-              resizeMode="cover"
-            />
+      <View className="px-6">
+        <Animated.View entering={FadeInDown.delay(200)} className="mt-6">
+          {image && (
+            <View className="mb-4">
+              <Image
+                source={{uri: image?.uri}}
+                className="h-[250px] w-full rounded"
+                resizeMode="cover"
+              />
+            </View>
+          )}
+          <View className="flex flex-row items-center justify-between">
+            <TouchableOpacity
+              className="bg-primary rounded-full p-3 items-center mb-4 disabled:bg-blue-300 w-1/3"
+              onPress={() => selectImage("library")}
+              disabled={loading === "loading"}
+            >
+              {loading === "loading" ? (
+                <ActivityIndicator color="white" />
+              ) : (
+                <Text className="text-lg font-medium text-white">
+                  Open Media
+                </Text>
+              )}
+            </TouchableOpacity>
+            <TouchableOpacity
+              className="bg-primary rounded-full p-3 items-center mb-4 disabled:bg-blue-300 w-1/3"
+              onPress={() => selectImage("camera")}
+              disabled={loading === "loading"}
+            >
+              {loading === "loading" ? (
+                <ActivityIndicator color="white" />
+              ) : (
+                <Text className="text-lg font-medium text-white">
+                  Open Camera
+                </Text>
+              )}
+            </TouchableOpacity>
           </View>
-        )}
-        <View className="flex flex-row items-center justify-between">
-          <TouchableOpacity
-            className="bg-primary rounded-full p-3 items-center mb-4 disabled:bg-blue-300 w-1/3"
-            onPress={() => selectImage("library")}
-            disabled={loading === "loading"}
-          >
-            {loading === "loading" ? (
-              <ActivityIndicator color="white" />
-            ) : (
-              <Text className="text-lg font-medium text-white">Open Media</Text>
-            )}
-          </TouchableOpacity>
-          <TouchableOpacity
-            className="bg-primary rounded-full p-3 items-center mb-4 disabled:bg-blue-300 w-1/3"
-            onPress={() => selectImage("camera")}
-            disabled={loading === "loading"}
-          >
-            {loading === "loading" ? (
-              <ActivityIndicator color="white" />
-            ) : (
-              <Text className="text-lg font-medium text-white">
-                Open Camera
-              </Text>
-            )}
-          </TouchableOpacity>
-        </View>
-        <AnimatedInput
-          control={control}
-          name="name"
-          label="Category Name"
-          keyboardType="default"
-          autoCapitalize="none"
-          error={errors.name?.message}
-          setLoading={setLoading}
-        />
-        <AnimatedButton
-          title="Create Category"
-          state={loading}
-          onPress={handleSubmit(onSubmit)}
-        />
+        </Animated.View>
+        <Animated.View entering={FadeInDown.delay(300)} className="mt-6">
+          <AnimatedInput
+            control={control}
+            name="name"
+            label="Category Name"
+            keyboardType="default"
+            autoCapitalize="none"
+            error={errors.name?.message}
+            setLoading={setLoading}
+          />
+          <AnimatedButton
+            title="Create Category"
+            state={loading}
+            onPress={handleSubmit(onSubmit)}
+          />
+        </Animated.View>
       </View>
     </KeyboardAvoidingView>
   );

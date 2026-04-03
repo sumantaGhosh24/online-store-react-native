@@ -18,7 +18,7 @@ const MyReviews = () => {
   const {results, status, loadMore, isLoading} = usePaginatedQuery(
     api.reviews.getPaginatedReviews,
     {userId: user?._id},
-    {initialNumItems: PAGINATION_MAX_COUNT}
+    {initialNumItems: PAGINATION_MAX_COUNT},
   );
 
   const hasMore = status === "CanLoadMore";
@@ -26,9 +26,7 @@ const MyReviews = () => {
   return (
     <FlatList
       data={results}
-      renderItem={({item, index}) => (
-        <Review {...item} loading={isLoading} index={index} />
-      )}
+      renderItem={({item, index}) => <Review {...item} index={index} />}
       keyExtractor={(item) => item._id.toString()}
       contentContainerStyle={{paddingBottom: 20}}
       ListFooterComponent={() =>

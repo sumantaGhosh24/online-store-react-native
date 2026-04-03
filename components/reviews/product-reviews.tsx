@@ -18,16 +18,14 @@ const ProductReviews = memo(({id}: ProductReviewsProps) => {
   const {results, status, loadMore, isLoading} = usePaginatedQuery(
     api.reviews.getPaginatedReviews,
     {productId: id},
-    {initialNumItems: PAGINATION_MAX_COUNT}
+    {initialNumItems: PAGINATION_MAX_COUNT},
   );
 
   const hasMore = status === "CanLoadMore";
 
   return (
     <View className="mb-5">
-      <View>
-        <Text className="text-lg font-bold dark:text-white">Reviews</Text>
-      </View>
+      <Text className="text-lg font-bold dark:text-white mb-3">Reviews</Text>
       {results.length > 0 ? (
         results.map((review, index) => (
           <ProductReview
@@ -41,13 +39,13 @@ const ProductReviews = memo(({id}: ProductReviewsProps) => {
         <EmptyState
           title="No reviews found"
           subtitle="Create a review"
-          buttonTitle="Reload"
-          handlePress={() => router.reload()}
+          buttonTitle="Go Home"
+          handlePress={() => router.push("/home")}
         />
       )}
       {hasMore && (
         <TouchableOpacity
-          className="bg-primary rounded-full py-3 items-center mb-4 disabled:bg-blue-300 mx-5"
+          className="bg-primary rounded-full py-2 mt-3 disabled:bg-blue-300"
           onPress={() => loadMore(PAGINATION_MAX_COUNT)}
           disabled={isLoading}
         >

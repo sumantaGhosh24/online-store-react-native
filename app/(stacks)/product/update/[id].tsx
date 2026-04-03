@@ -19,15 +19,10 @@ const UpdateProductScreen = () => {
   }, []);
 
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView style={{flex: 1}} edges={["bottom"]}>
       <View className="px-3" style={{flex: 1}}>
         <SegmentedControl
-          tabs={[
-            "Update Product",
-            "Update Content",
-            "Add Image",
-            "Remove Image",
-          ]}
+          tabs={["Product", "Content", "Add Image", "Remove Image"]}
           currentIndex={tabIndex}
           onChange={handleTabsChange}
           segmentedControlBackgroundColor="#fff"

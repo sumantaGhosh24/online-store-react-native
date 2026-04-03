@@ -40,7 +40,7 @@ Sentry.init({
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 if (!publishableKey) {
   throw new Error(
-    "Missing Publishable Key. Please set EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY in your .env"
+    "Missing Publishable Key. Please set EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY in your .env",
   );
 }
 LogBox.ignoreLogs(["Clerk: Clerk has been loaded with development keys."]);
@@ -48,7 +48,7 @@ LogBox.ignoreLogs(["Clerk: Clerk has been loaded with development keys."]);
 const publishableStripeKey = process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY;
 if (!publishableStripeKey) {
   throw new Error(
-    "Missing Publishable Stripe Key. Please set EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY in your .env"
+    "Missing Publishable Stripe Key. Please set EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY in your .env",
   );
 }
 
@@ -95,7 +95,7 @@ const InitialLayout = () => {
   return (
     <Fragment>
       <Stack>
-        <Stack.Protected guard={isSignedIn as boolean}>
+        <Stack.Protected guard={Boolean(isSignedIn)}>
           <Stack.Screen name="(tabs)" options={{headerShown: false}} />
           <Stack.Screen name="(stacks)" options={{headerShown: false}} />
         </Stack.Protected>
@@ -106,7 +106,7 @@ const InitialLayout = () => {
           <Stack.Screen name="index" options={{headerShown: false}} />
         </Stack.Protected>
       </Stack>
-      <StatusBar hidden />
+      <StatusBar style="inverted" />
     </Fragment>
   );
 };

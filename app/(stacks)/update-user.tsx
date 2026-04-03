@@ -2,17 +2,12 @@ import {useUser} from "@clerk/clerk-expo";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useCallback, useState} from "react";
 import {useForm} from "react-hook-form";
-import {
-  KeyboardAvoidingView,
-  Platform,
-  Text,
-  ToastAndroid,
-  View,
-} from "react-native";
+import {KeyboardAvoidingView, Platform, ToastAndroid, View} from "react-native";
+import Animated, {FadeInDown} from "react-native-reanimated";
 import {z} from "zod";
 
-import AnimatedButton from "../ui/animated-button";
-import AnimatedInput from "../ui/animated-input";
+import AnimatedButton from "@/components/ui/animated-button";
+import AnimatedInput from "@/components/ui/animated-input";
 
 const updateUserSchema = z.object({
   firstName: z
@@ -26,6 +21,7 @@ const updateUserSchema = z.object({
     .min(3, "Last name is minimum 3 characters long")
     .max(50, "Last name is maximum 50 characters long"),
 });
+
 type UpdateUserForm = z.infer<typeof updateUserSchema>;
 
 const UpdateUser = () => {
@@ -65,7 +61,7 @@ const UpdateUser = () => {
           ToastAndroid.LONG,
           ToastAndroid.BOTTOM,
           25,
-          50
+          50,
         );
       } catch (error: any) {
         setLoading("error");
@@ -74,44 +70,44 @@ const UpdateUser = () => {
           ToastAndroid.LONG,
           ToastAndroid.BOTTOM,
           25,
-          50
+          50,
         );
       }
     },
-    [isLoaded, user]
+    [isLoaded, user],
   );
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      className="flex-1"
     >
-      <View>
-        <Text className="text-2xl font-bold mb-5 dark:text-white">
-          Update User
-        </Text>
-        <AnimatedInput
-          control={control}
-          name="firstName"
-          label="First Name"
-          keyboardType="default"
-          autoCapitalize="none"
-          error={errors.firstName?.message}
-          setLoading={setLoading}
-        />
-        <AnimatedInput
-          control={control}
-          name="lastName"
-          label="Last Name"
-          keyboardType="default"
-          autoCapitalize="none"
-          error={errors.lastName?.message}
-          setLoading={setLoading}
-        />
-        <AnimatedButton
-          title="Update User"
-          state={loading}
-          onPress={handleSubmit(onSubmit)}
-        />
+      <View className="px-6 mt-5">
+        <Animated.View entering={FadeInDown.delay(200)} className="mt-6">
+          <AnimatedInput
+            control={control}
+            name="firstName"
+            label="First Name"
+            keyboardType="default"
+            autoCapitalize="none"
+            error={errors.firstName?.message}
+            setLoading={setLoading}
+          />
+          <AnimatedInput
+            control={control}
+            name="lastName"
+            label="Last Name"
+            keyboardType="default"
+            autoCapitalize="none"
+            error={errors.lastName?.message}
+            setLoading={setLoading}
+          />
+          <AnimatedButton
+            title="Update User"
+            state={loading}
+            onPress={handleSubmit(onSubmit)}
+          />
+        </Animated.View>
       </View>
     </KeyboardAvoidingView>
   );

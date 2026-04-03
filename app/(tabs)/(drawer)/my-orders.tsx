@@ -18,7 +18,7 @@ const MyOrders = () => {
   const {results, status, loadMore, isLoading} = usePaginatedQuery(
     api.orders.getPaginatedOrders,
     {userId: user?._id},
-    {initialNumItems: PAGINATION_MAX_COUNT}
+    {initialNumItems: PAGINATION_MAX_COUNT},
   );
 
   const hasMore = status === "CanLoadMore";
@@ -27,7 +27,7 @@ const MyOrders = () => {
     <FlatList
       data={results}
       renderItem={({item, index}) => (
-        <Order {...item} loading={isLoading} index={index} />
+        <Order {...item} index={index} isOwner={true} />
       )}
       keyExtractor={(item) => item._id.toString()}
       contentContainerStyle={{paddingBottom: 20}}

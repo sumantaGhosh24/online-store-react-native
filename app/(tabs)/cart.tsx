@@ -6,12 +6,14 @@ import {FlatList, Text, TouchableOpacity, View} from "react-native";
 import CartApplyCoupon from "@/components/cart/cart-apply-coupon";
 import CartCoupon from "@/components/cart/cart-coupon";
 import CartItem from "@/components/cart/cart-item";
+import CartAddress from "@/components/cart/cart-address";
+import CartApplyAddress from "@/components/cart/cart-apply-address";
 import EmptyCart from "@/components/cart/empty-cart";
 import {api} from "@/convex/_generated/api";
 import {useCartStore} from "@/store/cart";
 
 const Cart = () => {
-  const {products, count, coupon} = useCartStore();
+  const {products, count, coupon, address} = useCartStore();
 
   const data = useQuery(api.payments.calculateCartTotal, {products});
 
@@ -34,6 +36,7 @@ const Cart = () => {
               ) : (
                 <CartApplyCoupon total={data?.total as number} />
               )}
+              {address ? <CartAddress /> : <CartApplyAddress />}
               <View className="p-4 pt-10 bg-white dark:bg-gray-800">
                 <View className="flex-row justify-between items-center mb-3">
                   <Text className="text-lg font-semibold dark:text-white">
@@ -56,14 +59,20 @@ const Cart = () => {
                     )}
                   </View>
                 </View>
-                <Link href="/checkout" asChild>
-                  <TouchableOpacity className="bg-primary rounded-full py-4 items-center">
-                    <Text className="text-lg font-bold text-white">
-                      Proceed to checkout ({count} item
-                      {count > 1 ? "s" : ""})
-                    </Text>
-                  </TouchableOpacity>
-                </Link>
+                {address ? (
+                  <Link href="/checkout" asChild>
+                    <TouchableOpacity className="bg-primary rounded-full py-4 items-center">
+                      <Text className="text-lg font-bold text-white">
+                        Proceed to checkout ({count} item
+                        {count > 1 ? "s" : ""})
+                      </Text>
+                    </TouchableOpacity>
+                  </Link>
+                ) : (
+                  <Text className="dark:text-white">
+                    Add addresss to checkout
+                  </Text>
+                )}
               </View>
             </>
           }

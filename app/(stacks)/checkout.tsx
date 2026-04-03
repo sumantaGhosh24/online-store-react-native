@@ -6,8 +6,10 @@ import {useEffect, useState} from "react";
 import {Text, ToastAndroid, TouchableOpacity, View} from "react-native";
 
 import CartCoupon from "@/components/cart/cart-coupon";
+import CartAddress from "@/components/cart/cart-address";
 import {api} from "@/convex/_generated/api";
 import {useCartStore} from "@/store/cart";
+import {Id} from "@/convex/_generated/dataModel";
 
 interface FetchPaymentSheetParams {
   customerId?: string;
@@ -120,7 +122,8 @@ async function sendEmail({
 }
 
 const Checkout = () => {
-  const {products, count, coupon, removeCoupon, clearCart} = useCartStore();
+  const {products, count, coupon, removeCoupon, address, clearCart} =
+    useCartStore();
 
   const data = useQuery(api.payments.calculateCartTotal, {products});
 
@@ -138,17 +141,21 @@ const Checkout = () => {
     id: coupon ?? "",
   });
 
+  const addressData = useQuery(api.addresses.getAddress, {
+    id: address ?? "",
+  });
+
   const initializePaymentSheet = async () => {
     const {paymentIntent, ephemeralKey, customer, paymentId} =
       await fetchPaymentSheetParams({
         customerId: user?.customerId,
         customerName: user?.name,
         customerEmail: user?.email,
-        customerCity: user?.city,
-        customerState: user?.state,
-        customerCountry: user?.country,
-        customerPostalCode: user?.zip,
-        customerLine1: user?.addressline,
+        customerCity: addressData?.city,
+        customerState: addressData?.state,
+        customerCountry: addressData?.country,
+        customerPostalCode: addressData?.zip,
+        customerLine1: addressData?.addressline,
         amount: couponData ? data?.total! - couponData?.discount : data?.total,
       });
 
@@ -169,11 +176,11 @@ const Checkout = () => {
         email: user?.email,
         phone: user?.mobileNumber || "",
         address: {
-          country: user?.country || "",
-          city: user?.city || "",
-          state: user?.state || "",
-          line1: user?.addressline || "",
-          postalCode: user?.zip || "",
+          country: addressData?.country,
+          city: addressData?.city,
+          state: addressData?.state,
+          line1: addressData?.addressline,
+          postalCode: addressData?.zip,
         },
       },
       returnURL: Linking.createURL("stripe-redirect"),
@@ -186,6 +193,8 @@ const Checkout = () => {
   const createPayment = useMutation(api.payments.createPayment);
 
   const makePayment = async () => {
+    setLoading(true);
+
     const {error} = await presentPaymentSheet();
 
     if (error) {
@@ -194,14 +203,16 @@ const Checkout = () => {
         ToastAndroid.SHORT,
         ToastAndroid.BOTTOM,
         0,
-        100
+        100,
       );
+      setLoading(false);
     } else {
       const orderId = await createPayment({
         products: products,
         amount: data?.total!,
         couponId: coupon ?? "",
         paymentId: paymentId,
+        addressId: addressData?._id as Id<"addresses">,
       });
 
       ToastAndroid.showWithGravityAndOffset(
@@ -209,7 +220,7 @@ const Checkout = () => {
         ToastAndroid.SHORT,
         ToastAndroid.BOTTOM,
         0,
-        100
+        100,
       );
 
       await sendEmail({
@@ -226,15 +237,16 @@ const Checkout = () => {
         finalPrice: couponData
           ? data?.total! - couponData?.discount
           : data?.total!,
-        city: user?.city ?? "",
-        state: user?.state ?? "",
-        country: user?.country ?? "",
-        zip: user?.zip ?? "",
-        addressline: user?.addressline ?? "",
+        city: addressData?.city,
+        state: addressData?.state,
+        country: addressData?.country,
+        zip: addressData?.zip,
+        addressline: addressData?.addressline,
       });
 
       removeCoupon();
       clearCart();
+      setLoading(false);
 
       router.push("/cart");
     }
@@ -247,31 +259,38 @@ const Checkout = () => {
   if (count < 1) return;
 
   return (
-    <View>
+    <View className="p-3">
       {!!products.length && (
         <>
           {coupon && <CartCoupon setDiscount={setDiscount} checkout={true} />}
+          {address && <CartAddress checkout={true} />}
           <View className="p-4 pt-10 bg-white dark:bg-gray-800">
-            <View className="flex-row justify-between items-center mb-3">
-              <Text className="text-lg font-semibold dark:text-white">
+            <Text className="text-base font-semibold mb-3 dark:text-white">
+              Order Summary
+            </Text>
+            <View className="flex-row justify-between items-center mb-2">
+              <Text className="text-sm text-gray-500 dark:text-gray-300">
                 Subtotal
               </Text>
-              <View>
-                {coupon && discount > 0 ? (
-                  <View className="flex-row items-center gap-2">
-                    <Text className="text-2xl font-bold dark:text-white">
-                      ₹{data?.total! - discount}
-                    </Text>
-                    <Text className="line-through dark:text-white">
-                      ₹{data?.total}
-                    </Text>
-                  </View>
-                ) : (
-                  <Text className="text-2xl font-bold dark:text-white">
-                    ₹{data?.total}
-                  </Text>
-                )}
+              <Text className="text-sm font-semibold dark:text-white">
+                ₹{data?.total}
+              </Text>
+            </View>
+            {coupon && discount > 0 && (
+              <View className="flex-row justify-between items-center mb-2">
+                <Text className="text-sm text-primary">Discount</Text>
+                <Text className="text-sm font-semibold text-primary">
+                  - ₹{discount}
+                </Text>
               </View>
+            )}
+            <View className="h-[1px] bg-gray-200 dark:bg-gray-700 my-2" />
+            <View className="flex-row justify-between items-center mb-4">
+              <Text className="text-base font-bold dark:text-white">Total</Text>
+              <Text className="text-xl font-bold text-primary">
+                ₹
+                {coupon && discount > 0 ? data?.total! - discount : data?.total}
+              </Text>
             </View>
             <TouchableOpacity
               className="bg-primary rounded-full py-4 items-center disabled:bg-primary/60"
@@ -279,7 +298,7 @@ const Checkout = () => {
               disabled={!loading}
             >
               <Text className="text-lg font-bold text-white">
-                {!loading ? "Wait..." : "Checkout"}
+                {loading ? "Proceed to Checkout" : "Processing..."}
               </Text>
             </TouchableOpacity>
           </View>

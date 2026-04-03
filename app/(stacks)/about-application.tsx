@@ -59,7 +59,7 @@ const AboutApplication = () => {
     } catch {
       Alert.alert(
         "Update Failed",
-        "Failed to download the update. Please try again."
+        "Failed to download the update. Please try again.",
       );
     }
   }, []);

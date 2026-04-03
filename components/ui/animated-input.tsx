@@ -1,8 +1,7 @@
 import {memo, useEffect} from "react";
-import {Control, Controller} from "react-hook-form";
+import {Control, Controller, useWatch} from "react-hook-form";
 import {TextInput, TextInputProps, View} from "react-native";
 import Animated, {
-  Easing,
   FadeIn,
   FadeOut,
   useAnimatedStyle,
@@ -20,26 +19,40 @@ interface AnimatedInputProps extends TextInputProps {
 
 const AnimatedInput = memo(
   ({control, name, label, error, setLoading, ...props}: AnimatedInputProps) => {
-    const labelY = useSharedValue(0);
+    const value = useWatch({control, name});
+
+    const labelY = useSharedValue(18);
     const labelScale = useSharedValue(1);
     const borderColor = useSharedValue("#d1d5db");
 
+    const animateUp = () => {
+      labelY.value = withTiming(2, {duration: 180});
+      labelScale.value = withTiming(0.85, {duration: 180});
+    };
+
+    const animateDown = () => {
+      labelY.value = withTiming(18, {duration: 180});
+      labelScale.value = withTiming(1, {duration: 180});
+    };
+
     useEffect(() => {
-      borderColor.value = error ? withTiming("#ef4444") : withTiming("#d1d5db");
+      if (value) animateUp();
+      else animateDown();
+    }, [value]);
+
+    useEffect(() => {
+      borderColor.value = withTiming(error ? "#ef4444" : "#d1d5db");
     }, [error]);
 
-    const animatedLabelStyle = useAnimatedStyle(() => ({
+    const labelStyle = useAnimatedStyle(() => ({
       position: "absolute",
       left: 12,
-      top: withTiming(labelY.value, {
-        duration: 200,
-        easing: Easing.out(Easing.quad),
-      }),
-      transform: [{scale: withTiming(labelScale.value, {duration: 200})}],
+      top: labelY.value,
+      transform: [{scale: labelScale.value}],
     }));
 
-    const animatedBorderStyle = useAnimatedStyle(() => ({
-      borderColor: withTiming(borderColor.value, {duration: 200}),
+    const borderStyle = useAnimatedStyle(() => ({
+      borderColor: borderColor.value,
     }));
 
     return (
@@ -49,12 +62,12 @@ const AnimatedInput = memo(
         render={({field: {onChange, onBlur, value}}) => (
           <View className="mb-5">
             <Animated.View
-              style={[animatedBorderStyle]}
-              className="relative border rounded-lg bg-white dark:bg-gray-800 px-3 pt-5 pb-2"
+              style={borderStyle}
+              className="border rounded-xl px-3 pt-5 pb-2 bg-white dark:bg-gray-900"
             >
               <Animated.Text
-                style={[animatedLabelStyle]}
-                className="text-gray-500 dark:text-gray-300"
+                style={labelStyle}
+                className="text-gray-500 dark:text-white"
               >
                 {label}
               </Animated.Text>
@@ -63,26 +76,15 @@ const AnimatedInput = memo(
                 onChangeText={(text) => {
                   onChange(text);
                   setLoading("idle");
-                  if (text.length > 0) {
-                    labelY.value = -2;
-                    labelScale.value = 0.85;
-                  } else {
-                    labelY.value = 10;
-                    labelScale.value = 1;
-                  }
                 }}
                 onFocus={() => {
-                  borderColor.value = "#3b82f6";
-                  labelY.value = -2;
-                  labelScale.value = 0.85;
+                  borderColor.value = withTiming("#2563EB");
+                  animateUp();
                 }}
                 onBlur={() => {
                   onBlur();
-                  borderColor.value = error ? "#ef4444" : "#d1d5db";
-                  if (!value) {
-                    labelY.value = 10;
-                    labelScale.value = 1;
-                  }
+                  borderColor.value = withTiming(error ? "#ef4444" : "#d1d5db");
+                  if (!value) animateDown();
                 }}
                 className="text-base text-black dark:text-white"
                 {...props}
@@ -101,7 +103,7 @@ const AnimatedInput = memo(
         )}
       />
     );
-  }
+  },
 );
 
 AnimatedInput.displayName = "AnimatedInput";

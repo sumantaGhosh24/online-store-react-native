@@ -44,132 +44,88 @@ const ProductDetails = () => {
       ToastAndroid.SHORT,
       ToastAndroid.BOTTOM,
       0,
-      100
+      100,
     );
   }, [addProduct, id]);
 
-  const handleChangeImage = useCallback(
-    (index: number) => {
-      setActiveImage(index);
-    },
-    [setActiveImage]
-  );
-
   return (
     <>
-      <Stack.Screen
-        options={{
-          headerRight: () => (
-            <View className="flex-row items-center justify-center gap-3">
-              <TouchableOpacity
-                className="items-center justify-center"
-                onPress={shareProduct}
-              >
-                <Ionicons name="share-outline" size={22} color="#fff" />
-              </TouchableOpacity>
-              <TouchableOpacity
-                className="items-center justify-center"
-                onPress={likeProduct}
-              >
-                <Ionicons name="heart-outline" size={22} color="#fff" />
-              </TouchableOpacity>
-            </View>
-          ),
-        }}
-      />
-      <View>
-        <ScrollView>
+      <Stack.Screen options={{title: product?.title}} />
+      <ScrollView>
+        <View className="relative">
           <Image
-            source={{uri: product?.imageUrls[activeImage]}}
-            className="h-[250px] w-full rounded mb-4"
-            resizeMode="cover"
+            source={{uri: product?.imageUrls?.[activeImage]}}
+            className="h-[280px] w-full"
           />
-          <View className="flex flex-row items-center justify-center gap-3 mb-4">
-            {product?.imageUrls.map((image, index) => (
-              <TouchableOpacity
-                className={`h-12 w-12 rounded-full ${
-                  product?.imageUrls.indexOf(image) === activeImage
-                    ? "border-2 border-primary h-14 w-14"
-                    : ""
-                }`}
-                key={image}
-                onPress={() => handleChangeImage(index)}
-              >
-                <Image
-                  source={{uri: image}}
-                  className="h-12 w-12 rounded-full"
-                  key={image}
-                  resizeMode="cover"
-                />
-              </TouchableOpacity>
-            ))}
-          </View>
-          <View className="px-3">
-            <Text className="text-2xl capitalize font-bold mb-3 dark:text-white">
-              {product?.title}
-            </Text>
-            <Text className="text-lg mb-3 dark:text-white">
-              {product?.description}
-            </Text>
-            {product?.content && (
-              <View className="bg-white p-3 rounded-md mb-3">
-                <Markdown>{product?.content}</Markdown>
-              </View>
-            )}
-            <View className="flex flex-row items-center gap-3 mb-3 flex-wrap">
-              <Text className="bg-primary text-white py-1.5 px-2 rounded-md">
-                Price: ₹{product?.price}
-              </Text>
-              <Text className="bg-primary text-white py-1.5 px-2 rounded-md">
-                Stock: {product?.stock}
-              </Text>
-              <Text className="bg-primary text-white py-1.5 px-2 rounded-md">
-                Sold: {product?.sold}
-              </Text>
-              <View className="flex-row items-center gap-3 bg-primary py-1.5 px-2 rounded-md">
-                <Image
-                  source={{uri: product?.category?.image}}
-                  className="w-6 h-6 rounded-full"
-                />
-                <Text className="text-white">{product?.category?.name}</Text>
-              </View>
-            </View>
-            <View className="flex-row items-center gap-3 mb-3">
-              <Image
-                source={{uri: product?.user?.image}}
-                className="w-12 h-12 rounded-full"
-              />
-              <View>
-                <View className="flex items-center flex-row">
-                  <Text className="dark:text-white">Created by </Text>
-                  <Text className="font-bold dark:text-white">
-                    {product?.user?.name}
-                  </Text>
-                </View>
-                <View className="flex items-center flex-row">
-                  <Text className="dark:text-white">Created since </Text>
-                  <Text className="font-bold dark:text-white">
-                    {new Date(
-                      product?._creationTime as any
-                    ).toLocaleDateString()}
-                  </Text>
-                </View>
-              </View>
-            </View>
-            <TouchableOpacity
-              className="bg-primary rounded-full py-3 mb-4 disabled:bg-blue-300 flex flex-row items-center justify-center gap-3 mx-24"
-              onPress={handleAddToCart}
-            >
-              <Ionicons name="cart" size={22} color="#fff" />
-              <Text className="text-lg font-medium text-white">
-                Add to Cart
-              </Text>
+          <View className="absolute top-4 right-4 flex-row gap-3">
+            <TouchableOpacity onPress={shareProduct}>
+              <Ionicons name="share-outline" size={22} color="#fff" />
             </TouchableOpacity>
-            <AddProductReview id={id as Id<"products">} />
-            <ProductReviews id={id as Id<"products">} />
+            <TouchableOpacity onPress={likeProduct}>
+              <Ionicons name="heart-outline" size={22} color="#fff" />
+            </TouchableOpacity>
           </View>
+        </View>
+        <ScrollView horizontal className="px-3 mt-3">
+          {product?.imageUrls?.map((img, i) => (
+            <TouchableOpacity key={img} onPress={() => setActiveImage(i)}>
+              <Image
+                source={{uri: img}}
+                className={`w-16 h-16 rounded-xl mr-2 ${
+                  activeImage === i ? "border-2 border-blue-500" : ""
+                }`}
+              />
+            </TouchableOpacity>
+          ))}
         </ScrollView>
-      </View>
+        <View className="p-4">
+          <Text className="text-xl font-bold dark:text-white">
+            {product?.title}
+          </Text>
+          <Text className="text-yellow-500 mt-1">
+            ⭐ {product?.reviews?.average ?? 0} ({product?.reviews?.count ?? 0})
+          </Text>
+          <Text className="text-2xl font-bold text-green-600 mt-2">
+            ₹{product?.price}
+          </Text>
+          <Text className="mt-2 dark:text-white">{product?.description}</Text>
+          <View className="bg-white px-1 rounded my-2">
+            <Markdown>{product?.content}</Markdown>
+          </View>
+          <View className="flex-row flex-wrap gap-2 mt-3">
+            <Text className="bg-primary text-white px-2 py-1 rounded uppercase">
+              {product?.category?.name}
+            </Text>
+            <Text className="bg-purple-500 text-white px-2 py-1 rounded">
+              Stock: {product?.stock ?? 0}
+            </Text>
+            <Text className="bg-orange-500 text-white px-2 py-1 rounded">
+              Sold: {product?.sold ?? 0}
+            </Text>
+          </View>
+          <View className="flex-row items-center mt-4 gap-3">
+            <Image
+              source={{uri: product?.user?.image}}
+              className="w-12 h-12 rounded-full"
+            />
+            <View>
+              <Text className="dark:text-white">By {product?.user?.name}</Text>
+              <Text className="text-xs text-gray-500 dark:text-white">
+                {new Date(product?._creationTime as any).toDateString()}
+              </Text>
+            </View>
+          </View>
+          <TouchableOpacity
+            onPress={handleAddToCart}
+            className="bg-blue-600 py-3 rounded-xl mt-4 flex-row justify-center"
+          >
+            <Ionicons name="cart" size={20} color="#fff" />
+            <Text className="text-white ml-2">Add to Cart</Text>
+          </TouchableOpacity>
+          <AddProductReview id={id as Id<"products">} />
+          <ProductReviews id={id as Id<"products">} />
+        </View>
+      </ScrollView>
     </>
   );
 };

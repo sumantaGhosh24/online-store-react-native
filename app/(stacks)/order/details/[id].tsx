@@ -7,6 +7,21 @@ import UpdateOrder from "@/components/orders/update-order";
 import {api} from "@/convex/_generated/api";
 import {Id} from "@/convex/_generated/dataModel";
 
+interface RowProps {
+  label: string;
+  value: string;
+  bold?: boolean;
+}
+
+const Row = ({label, value, bold = false}: RowProps) => (
+  <View className="flex-row justify-between">
+    <Text className="text-gray-500 dark:text-white">{label}</Text>
+    <Text className={`dark:text-white ${bold ? "font-bold" : ""}`}>
+      {value}
+    </Text>
+  </View>
+);
+
 const OrderDetails = () => {
   const {id} = useLocalSearchParams();
 
@@ -16,181 +31,116 @@ const OrderDetails = () => {
   const isAdmin = user?.role === "admin";
 
   return (
-    <View>
-      <ScrollView>
-        <View className="p-3">
-          <View className="flex flex-row items-center justify-between bg-gray-300 dark:bg-gray-800 px-2 py-3">
-            <Text className="text-xl font-bold dark:text-white w-[50%]">
-              Product
-            </Text>
-            <Text className="text-xl font-bold dark:text-white w-[25%] text-center">
-              Quantity
-            </Text>
-            <Text className="text-xl font-bold dark:text-white w-[25%] text-center">
-              Price
-            </Text>
-          </View>
+    <View className="flex-1">
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View className="bg-white dark:bg-gray-900 m-3 rounded-2xl p-4 shadow-sm">
+          <Text className="text-lg font-bold mb-3 dark:text-white">
+            Order Items
+          </Text>
           {order?.orderItems.map((item) => (
             <View
               key={item?.product?._id}
-              className="flex flex-row items-center justify-between bg-gray-200 dark:bg-gray-700 p-2"
+              className="flex-row items-center mb-4"
             >
-              <Text className="text-lg capitalize dark:text-white w-[50%]">
-                {item?.product?.title}
-              </Text>
-              <Text className="text-lg dark:text-white w-[25%] text-center">
-                {item?.quantity}
-              </Text>
-              <Text className="text-lg dark:text-white w-[25%] text-center">
-                ₹{item?.product?.price}
+              <View className="flex-1">
+                <Text className="font-semibold dark:text-white">
+                  {item?.product?.title}
+                </Text>
+                <Text className="text-gray-500 dark:text-white text-sm">
+                  Qty: {item.quantity} × ₹{item.product.price}
+                </Text>
+              </View>
+              <Text className="font-bold dark:text-white">
+                ₹{item.product.price * item.quantity}
               </Text>
             </View>
           ))}
-          <View className="flex flex-row items-center gap-2 my-3">
-            <Text className="text-xl font-bold dark:text-white">
-              User name:
+        </View>
+        <View className="bg-white dark:bg-gray-900 mx-3 mb-3 rounded-2xl p-4 shadow-sm">
+          <Text className="text-lg font-bold mb-3 dark:text-white">
+            Customer Details
+          </Text>
+          <Text className="dark:text-white capitalize">
+            {order?.user?.name}
+          </Text>
+          <Text className="text-gray-500 dark:text-white">
+            {order?.user?.email}
+          </Text>
+          <Text className="text-gray-500 dark:text-white">
+            @{order?.user?.username}
+          </Text>
+        </View>
+        {order?.coupon?.name !== "" && (
+          <View className="bg-white dark:bg-gray-900 mx-3 mb-3 rounded-2xl p-4 shadow-sm">
+            <Text className="text-lg font-bold mb-3 dark:text-white">
+              Coupon Applied
             </Text>
-            <Text className="text-lg dark:text-white capitalize">
-              {order?.user?.name}
+            <Text className="dark:text-white font-semibold capitalize">
+              {order?.coupon?.name}
             </Text>
-          </View>
-          <View className="flex flex-row items-center gap-2 mb-3">
-            <Text className="text-xl font-bold dark:text-white">
-              User email:
+            <Text className="text-gray-500 dark:text-white uppercase">
+              {order?.coupon?.code}
             </Text>
-            <Text className="text-lg dark:text-white">
-              {order?.user?.email}
-            </Text>
-          </View>
-          <View className="flex flex-row items-center gap-2 mb-3">
-            <Text className="text-xl font-bold dark:text-white">
-              User username:
-            </Text>
-            <Text className="text-lg dark:text-white">
-              {order?.user?.username}
-            </Text>
-          </View>
-          {order?.coupon?.name !== "" && (
-            <>
-              <View className="flex flex-row items-center gap-2 mb-3">
-                <Text className="text-xl font-bold dark:text-white">
-                  Coupon ID:
-                </Text>
-                <Text className="text-lg dark:text-white">
-                  {order?.coupon?._id}
-                </Text>
-              </View>
-              <View className="flex flex-row items-center gap-2 mb-3">
-                <Text className="text-xl font-bold dark:text-white">
-                  Coupon name:
-                </Text>
-                <Text className="text-lg dark:text-white">
-                  {order?.coupon?.name}
-                </Text>
-              </View>
-              <View className="flex flex-row items-center gap-2 mb-3">
-                <Text className="text-xl font-bold dark:text-white">
-                  Coupon code:
-                </Text>
-                <Text className="text-lg dark:text-white uppercase">
-                  {order?.coupon?.code}
-                </Text>
-              </View>
-              <View className="flex flex-row items-center gap-2 mb-3">
-                <Text className="text-xl font-bold dark:text-white">
-                  Coupon discount:
-                </Text>
-                <Text className="text-lg dark:text-white">
-                  ₹{order?.coupon?.discount}
-                </Text>
-              </View>
-            </>
-          )}
-          <View className="flex flex-row items-center gap-2 mb-3">
-            <Text className="text-xl font-bold dark:text-white">
-              Shipping city:
-            </Text>
-            <Text className="text-lg dark:text-white capitalize">
-              {order?.shippingAddress?.city}
+            <Text className="text-green-500 font-bold mt-1">
+              -₹{order?.coupon?.discount}
             </Text>
           </View>
-          <View className="flex flex-row items-center gap-2 mb-3">
-            <Text className="text-xl font-bold dark:text-white">
-              Shipping state:
-            </Text>
-            <Text className="text-lg dark:text-white capitalize">
-              {order?.shippingAddress?.state}
-            </Text>
-          </View>
-          <View className="flex flex-row items-center gap-2 mb-3">
-            <Text className="text-xl font-bold dark:text-white">
-              Shipping country:
-            </Text>
-            <Text className="text-lg dark:text-white capitalize">
-              {order?.shippingAddress?.country}
-            </Text>
-          </View>
-          <View className="flex flex-row items-center gap-2 mb-3">
-            <Text className="text-xl font-bold dark:text-white">
-              Shipping zip:
-            </Text>
-            <Text className="text-lg dark:text-white capitalize">
-              {order?.shippingAddress?.zip}
-            </Text>
-          </View>
-          <View className="flex flex-row items-center gap-2 mb-3">
-            <Text className="text-xl font-bold dark:text-white">
-              Shipping address:
-            </Text>
-            <Text className="text-lg dark:text-white capitalize">
-              {order?.shippingAddress?.address}
-            </Text>
-          </View>
-          <View className="flex flex-row items-center gap-2 mb-3">
-            <Text className="text-xl font-bold dark:text-white">
-              Payment status:
-            </Text>
-            <Text className="text-lg dark:text-white uppercase">
+        )}
+        <View className="bg-white dark:bg-gray-900 mx-3 mb-3 rounded-2xl p-4 shadow-sm">
+          <Text className="text-lg font-bold mb-3 dark:text-white">
+            Shipping Address
+          </Text>
+          <Text className="dark:text-white capitalize">
+            {order?.shippingAddress?.address}
+          </Text>
+          <Text className="text-gray-500 dark:text-white">
+            {order?.shippingAddress?.city}, {order?.shippingAddress?.state}
+          </Text>
+          <Text className="text-gray-500 dark:text-white">
+            {order?.shippingAddress?.country} - {order?.shippingAddress?.zip}
+          </Text>
+        </View>
+        <View className="bg-white dark:bg-gray-900 mx-3 mb-3 rounded-2xl p-4 shadow-sm">
+          <Text className="text-lg font-bold mb-3 dark:text-white">
+            Payment Details
+          </Text>
+          <View className="flex-row gap-2 mb-3">
+            <Text
+              className={`text-white px-2 py-1 rounded-full text-xs uppercase ${
+                order?.paymentStatus === "completed"
+                  ? "bg-green-500"
+                  : "bg-orange-500"
+              }`}
+            >
               {order?.paymentStatus}
             </Text>
-          </View>
-          <View className="flex flex-row items-center gap-2 mb-3">
-            <Text className="text-xl font-bold dark:text-white">Price:</Text>
-            <Text className="text-lg dark:text-white">₹{order?.price}</Text>
-          </View>
-          <View className="flex flex-row items-center gap-2 mb-3">
-            <Text className="text-xl font-bold dark:text-white">Discount:</Text>
-            <Text className="text-lg dark:text-white">₹{order?.discount}</Text>
-          </View>
-          <View className="flex flex-row items-center gap-2 mb-3">
-            <Text className="text-xl font-bold dark:text-white">
-              Final price:
-            </Text>
-            <Text className="text-lg dark:text-white">
-              ₹{order?.finalPrice}
+            <Text
+              className={`text-white px-2 py-1 rounded-full text-xs uppercase ${
+                order?.isDelivered ? "bg-green-500" : "bg-orange-500"
+              }`}
+            >
+              {order?.isDelivered ? "Delivered" : "Shipping"}
             </Text>
           </View>
-          <View className="flex flex-row items-center gap-2 mb-3">
-            <Text className="text-xl font-bold dark:text-white">Paid at:</Text>
-            <Text className="text-lg dark:text-white capitalize">
-              {new Date(order?.paidAt as any).toLocaleDateString()}
-            </Text>
+          <View className="gap-1">
+            <Row label="Price" value={`₹${order?.price}`} />
+            <Row label="Discount" value={`₹${order?.discount}`} />
+            <Row label="Total" value={`₹${order?.finalPrice}`} bold />
           </View>
+          <Text className="text-gray-500 mt-3 text-sm dark:text-white">
+            Paid: {new Date(order?.paidAt as any).toLocaleDateString()}
+          </Text>
           {order?.isDelivered && (
-            <View className="flex flex-row items-center gap-2 mb-3">
-              <Text className="text-xl font-bold dark:text-white">
-                Deliver at:
-              </Text>
-              <Text className="text-lg dark:text-white capitalize">
-                {new Date(order?.deliveredAt as any).toLocaleDateString()}
-              </Text>
-            </View>
+            <Text className="text-gray-500 text-sm dark:text-white">
+              Delivered:{" "}
+              {new Date(order?.deliveredAt as any).toLocaleDateString()}
+            </Text>
           )}
-          {!order?.isDelivered && isAdmin && (
-            <UpdateOrder id={order?._id as Id<"orders">} />
-          )}
-          {order?.isDelivered && <PrintOrder id={order?._id as Id<"orders">} />}
         </View>
+        {!order?.isDelivered && isAdmin && (
+          <UpdateOrder id={order?._id as Id<"orders">} />
+        )}
+        {order?.isDelivered && <PrintOrder id={order?._id as Id<"orders">} />}
       </ScrollView>
     </View>
   );
