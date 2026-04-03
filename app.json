@@ -59,6 +59,13 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "f10df360-20c2-4443-b226-aa0c699d268b"
+      }
+    },
+    "owner": "sumantaghosh24s-organization"
   }
 }

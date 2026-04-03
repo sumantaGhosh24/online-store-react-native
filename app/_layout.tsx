@@ -3,11 +3,9 @@ import {tokenCache} from "@clerk/clerk-expo/token-cache";
 import {FontAwesome} from "@expo/vector-icons";
 import {DarkTheme, DefaultTheme, ThemeProvider} from "@react-navigation/native";
 import * as Sentry from "@sentry/react-native";
-import {StripeProvider} from "@stripe/stripe-react-native";
 import {ConvexReactClient} from "convex/react";
 import {ConvexProviderWithClerk} from "convex/react-clerk";
 import {useFonts} from "expo-font";
-import * as Linking from "expo-linking";
 import {Stack} from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import {StatusBar} from "expo-status-bar";
@@ -19,6 +17,7 @@ import "react-native-reanimated";
 import "react-native-url-polyfill/auto";
 
 import {useAuthStore} from "@/store";
+import AppStripeProvider from "@/components/providers/StripeProvider";
 
 import "@/global.css";
 
@@ -118,10 +117,7 @@ export default Sentry.wrap(function RootLayout() {
     <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
       <ClerkLoaded>
         <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
-          <StripeProvider
-            publishableKey={publishableStripeKey}
-            urlScheme={Linking.createURL("/").split(":")[0]}
-          >
+          <AppStripeProvider publishableKey={publishableStripeKey}>
             <GestureHandlerRootView style={{flex: 1}}>
               <ThemeProvider
                 value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
@@ -129,7 +125,7 @@ export default Sentry.wrap(function RootLayout() {
                 <InitialLayout />
               </ThemeProvider>
             </GestureHandlerRootView>
-          </StripeProvider>
+          </AppStripeProvider>
         </ConvexProviderWithClerk>
       </ClerkLoaded>
     </ClerkProvider>
