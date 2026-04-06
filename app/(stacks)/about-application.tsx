@@ -44,7 +44,21 @@ const AboutApplication = () => {
   const {isUpdateAvailable, isUpdatePending} = Updates.useUpdates();
 
   useEffect(() => {
-    Updates.checkForUpdateAsync();
+    const checkUpdate = async () => {
+      if (__DEV__ || !Updates.isEnabled) return;
+
+      try {
+        const update = await Updates.checkForUpdateAsync();
+
+        if (update.isAvailable) {
+          await Updates.fetchUpdateAsync();
+        }
+      } catch (error) {
+        console.log("Update error:", error);
+      }
+    };
+
+    checkUpdate();
   }, []);
 
   useEffect(() => {

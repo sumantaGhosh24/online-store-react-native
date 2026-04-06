@@ -40,6 +40,10 @@ const ChartContainer = ({title, children}: ChartContainerProps) => (
 const ProductSummaryCharts = memo(() => {
   const productSummary = useQuery(api.dashboard.getProductSummary);
 
+  const theme = useColorScheme();
+
+  if (!productSummary) return null;
+
   const inventoryData = [
     {
       value: productSummary?.totalStock ?? 0,
@@ -85,8 +89,6 @@ const ProductSummaryCharts = memo(() => {
     productSummary!.topSellingProducts?.length > 0
       ? productSummary?.topSellingProducts[0]?.sold
       : 100;
-
-  const theme = useColorScheme();
 
   return (
     <>

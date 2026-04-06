@@ -2,15 +2,17 @@ import {AntDesign, FontAwesome, Ionicons} from "@expo/vector-icons";
 import {Stack, Tabs} from "expo-router";
 import {Text, View} from "react-native";
 import {useQuery} from "convex/react";
+import {useSafeAreaInsets} from "react-native-safe-area-context";
 
 import {useCartStore} from "@/store/cart";
-import {AdminToggleButton} from "@/components/auth/admin-toggle-button";
 import {api} from "@/convex/_generated/api";
 
 const TabLayout = () => {
   const user = useQuery(api.users.getUser);
 
   const {count} = useCartStore();
+
+  const insets = useSafeAreaInsets();
 
   if (user === undefined) {
     return null;
@@ -26,17 +28,17 @@ const TabLayout = () => {
         headerTintColor: "#fff",
         tabBarActiveTintColor: "#fff",
         tabBarInactiveTintColor: "#fff",
+        tabBarHideOnKeyboard: true,
         tabBarStyle: {
           backgroundColor: "#1D4ED8",
           borderTopWidth: 0,
-          height: 65,
-          paddingBottom: 6,
+          height: 60 + insets.bottom,
+          paddingBottom: insets.bottom,
         },
         tabBarLabelStyle: {
           fontSize: 12,
           fontWeight: "600",
         },
-        headerRight: () => <AdminToggleButton />,
       }}
     >
       <Tabs.Screen

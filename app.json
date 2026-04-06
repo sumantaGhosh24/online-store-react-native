@@ -66,6 +66,11 @@
         "projectId": "f10df360-20c2-4443-b226-aa0c699d268b"
       }
     },
-    "owner": "sumantaghosh24s-organization"
+    "owner": "sumantaghosh24s-organization",
+    "updates": {
+      "enabled": true,
+      "checkAutomatically": "ON_LOAD",
+      "fallbackToCacheTimeout": 0
+    }
   }
 }

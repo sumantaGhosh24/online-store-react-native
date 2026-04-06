@@ -1,7 +1,6 @@
 import {useLocalSearchParams} from "expo-router";
 import {useCallback, useState} from "react";
 import {View} from "react-native";
-import {SafeAreaView} from "react-native-safe-area-context";
 
 import AddProductImage from "@/components/products/add-product-image";
 import RemoveProductImage from "@/components/products/remove-product-image";
@@ -19,24 +18,22 @@ const UpdateProductScreen = () => {
   }, []);
 
   return (
-    <SafeAreaView style={{flex: 1}} edges={["bottom"]}>
-      <View className="px-3" style={{flex: 1}}>
-        <SegmentedControl
-          tabs={["Product", "Content", "Add Image", "Remove Image"]}
-          currentIndex={tabIndex}
-          onChange={handleTabsChange}
-          segmentedControlBackgroundColor="#fff"
-          activeSegmentBackgroundColor="#1D4ED8"
-          textColor="#000"
-          activeTextColor="#fff"
-          paddingVertical={10}
-        />
-        {tabIndex === 0 && <UpdateProduct id={id as string} />}
-        {tabIndex === 1 && <UpdateProductContent id={id as string} />}
-        {tabIndex === 2 && <AddProductImage id={id as string} />}
-        {tabIndex === 3 && <RemoveProductImage id={id as string} />}
-      </View>
-    </SafeAreaView>
+    <View className="px-3" style={{flex: 1}}>
+      <SegmentedControl
+        tabs={["Product", "Content", "Add Image", "Remove Image"]}
+        currentIndex={tabIndex}
+        onChange={handleTabsChange}
+        segmentedControlBackgroundColor="#fff"
+        activeSegmentBackgroundColor="#1D4ED8"
+        textColor="#000"
+        activeTextColor="#fff"
+        paddingVertical={10}
+      />
+      {tabIndex === 0 && <UpdateProduct id={id as string} />}
+      {tabIndex === 1 && <UpdateProductContent id={id as string} />}
+      {tabIndex === 2 && <AddProductImage id={id as string} />}
+      {tabIndex === 3 && <RemoveProductImage id={id as string} />}
+    </View>
   );
 };
 

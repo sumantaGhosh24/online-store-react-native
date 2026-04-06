@@ -138,7 +138,7 @@ export default function Onboarding() {
           />
         )}
       />
-      <StatusBar style="auto" />
+      <StatusBar style="dark" />
     </>
   );
 }

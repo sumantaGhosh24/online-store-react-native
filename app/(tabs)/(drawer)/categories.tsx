@@ -16,7 +16,7 @@ const Categories = () => {
   const {results, status, loadMore, isLoading} = usePaginatedQuery(
     api.categories.getCategoriesPaginated,
     {},
-    {initialNumItems: PAGINATION_MAX_COUNT}
+    {initialNumItems: PAGINATION_MAX_COUNT},
   );
 
   const hasMore = status === "CanLoadMore";
@@ -30,7 +30,7 @@ const Categories = () => {
       keyExtractor={(item) => item._id.toString()}
       contentContainerStyle={{paddingBottom: 20}}
       ListFooterComponent={() =>
-        hasMore && (
+        hasMore ? (
           <TouchableOpacity
             className="bg-primary rounded-full py-3 items-center mb-4 disabled:bg-blue-300 mx-5"
             onPress={() => loadMore(PAGINATION_MAX_COUNT)}
@@ -42,7 +42,7 @@ const Categories = () => {
               <Text className="text-lg font-medium text-white">Load More</Text>
             )}
           </TouchableOpacity>
-        )
+        ) : null
       }
       ListEmptyComponent={() => (
         <EmptyState

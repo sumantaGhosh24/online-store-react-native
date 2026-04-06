@@ -77,7 +77,7 @@ const Order = ({
       </View>
       <View>
         <TouchableOpacity onPress={() => router.push(`/order/details/${_id}`)}>
-          <Ionicons name="settings" size={32} color={Colors.background} />
+          <Ionicons name="eye" size={20} color={Colors.background} />
         </TouchableOpacity>
       </View>
     </AnimatedListItem>

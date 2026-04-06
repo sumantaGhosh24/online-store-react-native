@@ -40,6 +40,10 @@ const ChartContainer = ({title, children}: ChartContainerProps) => (
 const FinancialSummaryChart = memo(() => {
   const financialSummary = useQuery(api.dashboard.getFinancialSummary);
 
+  const theme = useColorScheme();
+
+  if (!financialSummary) return null;
+
   const chartData = [
     {
       value: financialSummary?.completedOrders ?? 0,
@@ -54,8 +58,6 @@ const FinancialSummaryChart = memo(() => {
       gradientColor: "#fca5a5",
     },
   ];
-
-  const theme = useColorScheme();
 
   return (
     <ChartContainer title="Order Status and Value">
@@ -125,7 +127,7 @@ const FinancialSummaryChart = memo(() => {
             maxValue={
               Math.max(
                 financialSummary?.totalOrders ?? 0 / 100,
-                financialSummary?.totalRevenue ?? 0 / 10000
+                financialSummary?.totalRevenue ?? 0 / 10000,
               ) + 10
             }
             noOfSections={4}

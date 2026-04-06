@@ -27,7 +27,7 @@ const Reviews = () => {
   const {results, status, loadMore, isLoading} = usePaginatedQuery(
     api.reviews.getPaginatedReviews,
     {productId: product, userId: user},
-    {initialNumItems: PAGINATION_MAX_COUNT},
+    {initialNumItems: PAGINATION_MAX_COUNT}
   );
 
   const hasMore = status === "CanLoadMore";
@@ -75,7 +75,7 @@ const Reviews = () => {
         keyboardShouldPersistTaps="handled"
         removeClippedSubviews={false}
         ListFooterComponent={() =>
-          hasMore && (
+          hasMore ? (
             <TouchableOpacity
               className="bg-primary rounded-full py-3 items-center mb-4 disabled:bg-blue-300 mx-5"
               onPress={() => loadMore(PAGINATION_MAX_COUNT)}
@@ -89,7 +89,7 @@ const Reviews = () => {
                 </Text>
               )}
             </TouchableOpacity>
-          )
+          ) : null
         }
         ListEmptyComponent={() => (
           <EmptyState

@@ -43,7 +43,7 @@ export const deleteFromClerk = internalMutation({
       await ctx.db.delete(user._id);
     } else {
       console.warn(
-        `Can't delete user, there is none for Clerk user ID: ${clerkUserId}`,
+        `Can't delete user, there is none for Clerk user ID: ${clerkUserId}`
       );
     }
   },
@@ -92,18 +92,6 @@ export const updateUserDetails = mutation({
     const user = await userByExternalId(ctx, identity.subject);
     if (user === null) throw new Error("User not found");
 
-    const existingMobile = await ctx.db
-      .query("users")
-      .filter((q) => q.eq(q.field("mobileNumber"), args.mobileNumber))
-      .first();
-    if (existingMobile) throw new Error("Mobile already registered");
-
-    const existingUsername = await ctx.db
-      .query("users")
-      .filter((q) => q.eq(q.field("username"), args.username.toLowerCase()))
-      .first();
-    if (existingUsername) throw new Error("Username already taken");
-
     await ctx.db.patch(user?._id, {
       mobileNumber: args.mobileNumber,
       username: args.username.toLowerCase(),
@@ -147,7 +135,7 @@ export const getPaginatedUsers = query({
       users.page.map(async (user) => ({
         ...user,
         image: await ctx.storage.getUrl(user.image!),
-      })),
+      }))
     );
 
     return {

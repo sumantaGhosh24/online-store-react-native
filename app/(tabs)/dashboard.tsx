@@ -1,4 +1,4 @@
-import {ScrollView, Text, View} from "react-native";
+import {ScrollView, Text} from "react-native";
 
 import FinancialSummaryChart from "@/components/dashboard/financial-summary-chart";
 import ProductSummaryCharts from "@/components/dashboard/product-summary-chart";
@@ -27,7 +27,6 @@ const Dashboard = () => {
       <AnimatedCard>
         <FinancialSummaryChart />
       </AnimatedCard>
-      <View className="h-[50]" />
     </ScrollView>
   );
 };

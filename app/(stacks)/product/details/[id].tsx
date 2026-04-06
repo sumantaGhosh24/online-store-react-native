@@ -85,7 +85,7 @@ const ProductDetails = () => {
           <Text className="text-yellow-500 mt-1">
             ⭐ {product?.reviews?.average ?? 0} ({product?.reviews?.count ?? 0})
           </Text>
-          <Text className="text-2xl font-bold text-green-600 mt-2">
+          <Text className="text-2xl font-bold text-blue-600 mt-2">
             ₹{product?.price}
           </Text>
           <Text className="mt-2 dark:text-white">{product?.description}</Text>

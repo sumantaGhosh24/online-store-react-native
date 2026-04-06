@@ -50,27 +50,11 @@ const StackLayout = () => {
         />
         <Stack.Screen
           name="address/create"
-          options={{
-            presentation: "formSheet",
-            title: "",
-            sheetAllowedDetents: [0.5, 0.75, 0.9],
-            sheetGrabberVisible: false,
-            sheetCornerRadius: 10,
-            headerShown: false,
-            sheetExpandsWhenScrolledToEdge: false,
-          }}
+          options={{title: "Create Address"}}
         />
         <Stack.Screen
           name="address/update/[id]"
-          options={{
-            presentation: "formSheet",
-            title: "",
-            sheetAllowedDetents: [0.5, 0.75, 0.9],
-            sheetGrabberVisible: false,
-            sheetCornerRadius: 10,
-            headerShown: false,
-            sheetExpandsWhenScrolledToEdge: false,
-          }}
+          options={{title: "Update Address"}}
         />
 
         <Stack.Screen

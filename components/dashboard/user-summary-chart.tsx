@@ -40,6 +40,10 @@ const ChartContainer = ({title, children}: ChartContainerProps) => (
 const UserSummaryChart = memo(() => {
   const userSummary = useQuery(api.dashboard.getUserSummary);
 
+  const theme = useColorScheme();
+
+  if (!userSummary) return null;
+
   const chartData = [
     {
       value: userSummary?.userCount ?? 0,
@@ -54,8 +58,6 @@ const UserSummaryChart = memo(() => {
       gradientColor: "#f188fe",
     },
   ];
-
-  const theme = useColorScheme();
 
   return (
     <ChartContainer title="User Roles Distribution">

@@ -2,8 +2,9 @@ import {useUser} from "@clerk/clerk-expo";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useCallback, useState} from "react";
 import {useForm} from "react-hook-form";
-import {KeyboardAvoidingView, Platform, ToastAndroid, View} from "react-native";
+import {ToastAndroid, View} from "react-native";
 import Animated, {FadeInDown} from "react-native-reanimated";
+import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 import {z} from "zod";
 
 import AnimatedButton from "@/components/ui/animated-button";
@@ -78,10 +79,7 @@ const UpdateUser = () => {
   );
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-      className="flex-1"
-    >
+    <KeyboardAwareScrollView enableOnAndroid={true} extraScrollHeight={20}>
       <View className="px-6 mt-5">
         <Animated.View entering={FadeInDown.delay(200)} className="mt-6">
           <AnimatedInput
@@ -109,7 +107,7 @@ const UpdateUser = () => {
           />
         </Animated.View>
       </View>
-    </KeyboardAvoidingView>
+    </KeyboardAwareScrollView>
   );
 };
 

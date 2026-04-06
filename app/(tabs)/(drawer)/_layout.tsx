@@ -5,13 +5,14 @@ import {
   DrawerItemList,
 } from "@react-navigation/drawer";
 import {Drawer} from "expo-router/drawer";
-import {Alert, ToastAndroid} from "react-native";
+import {Alert, ToastAndroid, TouchableOpacity} from "react-native";
 import {GestureHandlerRootView} from "react-native-gesture-handler";
 import {useQuery} from "convex/react";
-import {Stack} from "expo-router";
+import {router, Stack} from "expo-router";
 
 import {Colors} from "@/constant/colors";
 import {api} from "@/convex/_generated/api";
+import {Ionicons} from "@expo/vector-icons";
 
 const DrawerLayout = () => {
   const user = useQuery(api.users.getUser);
@@ -102,7 +103,7 @@ const DrawerLayout = () => {
               headerRight: () => (
                 <TouchableOpacity
                   activeOpacity={0.7}
-                  style={{ padding: 5 }}
+                  style={{padding: 5}}
                   onPress={() => router.push("/product/create")}
                 >
                   <Ionicons name="add" size={32} color={"#fff"} />
@@ -118,7 +119,7 @@ const DrawerLayout = () => {
               headerRight: () => (
                 <TouchableOpacity
                   activeOpacity={0.7}
-                  style={{ padding: 5 }}
+                  style={{padding: 5}}
                   onPress={() => router.push("/category/create")}
                 >
                   <Ionicons name="add" size={32} color={"#fff"} />
@@ -138,7 +139,7 @@ const DrawerLayout = () => {
               headerRight: () => (
                 <TouchableOpacity
                   activeOpacity={0.7}
-                  style={{ padding: 5 }}
+                  style={{padding: 5}}
                   onPress={() => router.push("/coupon/create")}
                 >
                   <Ionicons name="add" size={32} color={"#fff"} />
@@ -149,6 +150,10 @@ const DrawerLayout = () => {
           <Drawer.Screen
             name="orders"
             options={{drawerLabel: "Manage Orders", title: "Manage Orders"}}
+          />
+          <Drawer.Screen
+            name="users"
+            options={{drawerLabel: "Manage Users", title: "Manage Users"}}
           />
         </Stack.Protected>
       </Drawer>

@@ -39,7 +39,7 @@ Sentry.init({
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 if (!publishableKey) {
   throw new Error(
-    "Missing Publishable Key. Please set EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY in your .env",
+    "Missing Publishable Key. Please set EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY in your .env"
   );
 }
 LogBox.ignoreLogs(["Clerk: Clerk has been loaded with development keys."]);
@@ -47,7 +47,7 @@ LogBox.ignoreLogs(["Clerk: Clerk has been loaded with development keys."]);
 const publishableStripeKey = process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY;
 if (!publishableStripeKey) {
   throw new Error(
-    "Missing Publishable Stripe Key. Please set EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY in your .env",
+    "Missing Publishable Stripe Key. Please set EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY in your .env"
   );
 }
 

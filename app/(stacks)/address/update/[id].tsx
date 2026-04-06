@@ -3,15 +3,9 @@ import {useMutation, useQuery} from "convex/react";
 import {useCallback, useState} from "react";
 import {useForm} from "react-hook-form";
 import {useLocalSearchParams} from "expo-router";
-import {
-  KeyboardAvoidingView,
-  Platform,
-  Text,
-  ToastAndroid,
-  View,
-} from "react-native";
+import {ToastAndroid, View} from "react-native";
 import Animated, {FadeInDown} from "react-native-reanimated";
-import {SafeAreaView} from "react-native-safe-area-context";
+import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 import {z} from "zod";
 
 import AnimatedButton from "@/components/ui/animated-button";
@@ -98,79 +92,71 @@ const UpdateAddress = () => {
   );
 
   return (
-    <SafeAreaView style={{flex: 1}} edges={["top", "bottom"]}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-        className="flex-1"
-      >
-        <View className="flex-1 px-6 pt-4">
-          <Text className="text-3xl font-bold text-gray-900 dark:text-white">
-            Update Address
-          </Text>
-          <Animated.View entering={FadeInDown.delay(300)} className="mt-6">
-            <AnimatedInput
-              control={control}
-              name="name"
-              label="Name"
-              keyboardType="default"
-              autoCapitalize="none"
-              error={errors.name?.message}
-              setLoading={setLoading}
-            />
-            <AnimatedInput
-              control={control}
-              name="city"
-              label="City"
-              keyboardType="default"
-              autoCapitalize="none"
-              error={errors.city?.message}
-              setLoading={setLoading}
-            />
-            <AnimatedInput
-              control={control}
-              name="state"
-              label="State"
-              keyboardType="default"
-              autoCapitalize="none"
-              error={errors.state?.message}
-              setLoading={setLoading}
-            />
-            <AnimatedInput
-              control={control}
-              name="country"
-              label="Country"
-              keyboardType="default"
-              autoCapitalize="none"
-              error={errors.country?.message}
-              setLoading={setLoading}
-            />
-            <AnimatedInput
-              control={control}
-              name="zip"
-              label="ZIP Code"
-              keyboardType="default"
-              autoCapitalize="none"
-              error={errors.zip?.message}
-              setLoading={setLoading}
-            />
-            <AnimatedInput
-              control={control}
-              name="addressline"
-              label="Address Line"
-              keyboardType="default"
-              autoCapitalize="none"
-              error={errors.addressline?.message}
-              setLoading={setLoading}
-            />
-            <AnimatedButton
-              title="Update Address"
-              state={loading}
-              onPress={handleSubmit(onSubmit)}
-            />
-          </Animated.View>
-        </View>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+    <KeyboardAwareScrollView enableOnAndroid={true} extraScrollHeight={20}>
+      <View className="flex-1 px-6 pt-4">
+        <Animated.View entering={FadeInDown.delay(300)} className="mt-6">
+          <AnimatedInput
+            control={control}
+            name="name"
+            label="Name"
+            keyboardType="default"
+            autoCapitalize="none"
+            error={errors.name?.message}
+            setLoading={setLoading}
+          />
+          <AnimatedInput
+            control={control}
+            name="city"
+            label="City"
+            keyboardType="default"
+            autoCapitalize="none"
+            error={errors.city?.message}
+            setLoading={setLoading}
+          />
+          <AnimatedInput
+            control={control}
+            name="state"
+            label="State"
+            keyboardType="default"
+            autoCapitalize="none"
+            error={errors.state?.message}
+            setLoading={setLoading}
+          />
+          <AnimatedInput
+            control={control}
+            name="country"
+            label="Country"
+            keyboardType="default"
+            autoCapitalize="none"
+            error={errors.country?.message}
+            setLoading={setLoading}
+          />
+          <AnimatedInput
+            control={control}
+            name="zip"
+            label="ZIP Code"
+            keyboardType="default"
+            autoCapitalize="none"
+            error={errors.zip?.message}
+            setLoading={setLoading}
+          />
+          <AnimatedInput
+            control={control}
+            name="addressline"
+            label="Address Line"
+            keyboardType="default"
+            autoCapitalize="none"
+            error={errors.addressline?.message}
+            setLoading={setLoading}
+          />
+          <AnimatedButton
+            title="Update Address"
+            state={loading}
+            onPress={handleSubmit(onSubmit)}
+          />
+        </Animated.View>
+      </View>
+    </KeyboardAwareScrollView>
   );
 };
 

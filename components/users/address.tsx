@@ -89,16 +89,16 @@ const Address = ({
             </Text>
           </View>
           <View>
-            <View style={{ flexDirection: "row" }}>
+            <View style={{flexDirection: "row"}}>
               <TouchableOpacity
                 className="p-1"
-                style={{ marginRight: 8 }}
+                style={{marginRight: 8}}
                 disabled={deleteLoading}
                 onPress={() => router.push(`/address/update/${_id}`)}
               >
                 <Ionicons
                   name="create-outline"
-                  size={24}
+                  size={20}
                   color={Colors.background}
                 />
               </TouchableOpacity>
@@ -107,11 +107,7 @@ const Address = ({
                 disabled={deleteLoading}
                 onPress={handleDeleteAddress}
               >
-                <Ionicons
-                  name="trash-outline"
-                  size={24}
-                  color="#ef4444"
-                />
+                <Ionicons name="trash-outline" size={20} color="#ef4444" />
               </TouchableOpacity>
             </View>
           </View>

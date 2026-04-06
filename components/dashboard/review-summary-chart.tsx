@@ -40,6 +40,10 @@ const ChartContainer = ({title, children}: ChartContainerProps) => (
 const ReviewSummaryChart = memo(() => {
   const reviewSummary = useQuery(api.dashboard.getReviewSummary);
 
+  const theme = useColorScheme();
+
+  if (!reviewSummary) return null;
+
   const ratingColors = {
     1: "#ef4444",
     2: "#f97316",
@@ -54,10 +58,8 @@ const ReviewSummaryChart = memo(() => {
       label: `${key} Star`,
       frontColor: ratingColors[key],
       gradientColor: `${ratingColors[key]}80`,
-    })
+    }),
   );
-
-  const theme = useColorScheme();
 
   return (
     <ChartContainer title="Customer Rating Distribution (1-5 Stars)">
@@ -80,7 +82,7 @@ const ReviewSummaryChart = memo(() => {
         hideRules
         height={180}
         maxValue={Math.max(
-          ...(Object.values(reviewSummary?.ratingDistribution ?? {}) as any)
+          ...(Object.values(reviewSummary?.ratingDistribution ?? {}) as any),
         )}
         noOfSections={4}
         barBorderRadius={5}

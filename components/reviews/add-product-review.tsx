@@ -2,13 +2,8 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import {useMutation} from "convex/react";
 import {memo, useCallback, useState} from "react";
 import {useForm} from "react-hook-form";
-import {
-  KeyboardAvoidingView,
-  Platform,
-  Text,
-  ToastAndroid,
-  View,
-} from "react-native";
+import {Text, ToastAndroid, View} from "react-native";
+import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 import {z} from "zod";
 
 import AnimatedButton from "@/components/ui/animated-button";
@@ -89,10 +84,7 @@ const AddProductReview = memo(({id}: AddProductReviewProps) => {
   );
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-      className="mt-5"
-    >
+    <KeyboardAwareScrollView enableOnAndroid={true} extraScrollHeight={20}>
       <View>
         <Text className="text-lg font-bold mb-5 dark:text-white">
           Create Review
@@ -125,7 +117,7 @@ const AddProductReview = memo(({id}: AddProductReviewProps) => {
           onPress={handleSubmit(onSubmit)}
         />
       </View>
-    </KeyboardAvoidingView>
+    </KeyboardAwareScrollView>
   );
 });
 

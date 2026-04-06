@@ -4,13 +4,12 @@ import {useCallback, useState} from "react";
 import {
   ActivityIndicator,
   Image,
-  KeyboardAvoidingView,
-  Platform,
   Text,
   ToastAndroid,
   TouchableOpacity,
   View,
 } from "react-native";
+import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 
 import {api} from "@/convex/_generated/api";
 import {Id} from "@/convex/_generated/dataModel";
@@ -47,7 +46,7 @@ const AddProductImage = ({id}: AddProductImageProps) => {
           ToastAndroid.LONG,
           ToastAndroid.BOTTOM,
           25,
-          50
+          50,
         );
         return;
       }
@@ -62,7 +61,7 @@ const AddProductImage = ({id}: AddProductImageProps) => {
           ToastAndroid.LONG,
           ToastAndroid.BOTTOM,
           25,
-          50
+          50,
         );
         return;
       }
@@ -82,7 +81,7 @@ const AddProductImage = ({id}: AddProductImageProps) => {
         ToastAndroid.LONG,
         ToastAndroid.BOTTOM,
         25,
-        50
+        50,
       );
 
     try {
@@ -112,7 +111,7 @@ const AddProductImage = ({id}: AddProductImageProps) => {
         ToastAndroid.SHORT,
         ToastAndroid.BOTTOM,
         0,
-        100
+        100,
       );
     } catch (error: any) {
       ToastAndroid.showWithGravityAndOffset(
@@ -120,7 +119,7 @@ const AddProductImage = ({id}: AddProductImageProps) => {
         ToastAndroid.SHORT,
         ToastAndroid.BOTTOM,
         0,
-        100
+        100,
       );
     } finally {
       setLoading(false);
@@ -128,10 +127,7 @@ const AddProductImage = ({id}: AddProductImageProps) => {
   }, [image, generateUploadUrl, addProductImage, id]);
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      className="px-3 mt-5"
-    >
+    <KeyboardAwareScrollView enableOnAndroid={true} extraScrollHeight={20}>
       <View>
         <Text className="text-2xl font-bold mb-2 dark:text-white">
           Add Product Image
@@ -176,7 +172,7 @@ const AddProductImage = ({id}: AddProductImageProps) => {
           onPress={handleAddProductImage}
         />
       </View>
-    </KeyboardAvoidingView>
+    </KeyboardAwareScrollView>
   );
 };
 

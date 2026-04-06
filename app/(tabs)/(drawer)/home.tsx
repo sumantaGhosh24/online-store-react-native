@@ -74,7 +74,7 @@ const Home = () => {
         keyboardShouldPersistTaps="handled"
         removeClippedSubviews={false}
         ListFooterComponent={() =>
-          hasMore && (
+          hasMore ? (
             <TouchableOpacity
               className="bg-primary rounded-full py-3 items-center mb-4 disabled:bg-blue-300 mx-5"
               onPress={() => loadMore(PAGINATION_MAX_COUNT)}
@@ -88,7 +88,7 @@ const Home = () => {
                 </Text>
               )}
             </TouchableOpacity>
-          )
+          ) : null
         }
         ListEmptyComponent={() => (
           <EmptyState

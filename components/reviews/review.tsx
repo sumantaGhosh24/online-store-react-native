@@ -124,13 +124,9 @@ const Review = ({
               <TouchableOpacity
                 onPress={() => handleDeleteReview()}
                 disabled={deleteLoading}
-                style={{ padding: 4 }}
+                style={{padding: 4}}
               >
-                <Ionicons
-                  name="trash-outline"
-                  size={28}
-                  color="#ef4444"
-                />
+                <Ionicons name="trash-outline" size={20} color="#ef4444" />
               </TouchableOpacity>
             </View>
           )}

@@ -50,7 +50,7 @@ const UpdateOrder = ({id}: UpdateOrderProps) => {
   }, [id, updateOrder]);
 
   return (
-    <View className="px-3">
+    <View className="px-3 mb-10">
       <AnimatedButton
         title="Delivered Order"
         state={loading}

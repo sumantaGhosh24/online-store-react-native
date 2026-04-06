@@ -3,15 +3,9 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import {useRouter} from "expo-router";
 import {useCallback, useState} from "react";
 import {useForm} from "react-hook-form";
-import {
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  Text,
-  ToastAndroid,
-  View,
-} from "react-native";
+import {Text, ToastAndroid, View} from "react-native";
 import Animated, {FadeInDown} from "react-native-reanimated";
+import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 import {z} from "zod";
 
 import AnimatedButton from "@/components/ui/animated-button";
@@ -82,43 +76,39 @@ const RegisterVerify = () => {
   );
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-      className="flex-1"
+    <KeyboardAwareScrollView
+      enableOnAndroid={true}
+      extraScrollHeight={20}
+      contentContainerStyle={{flexGrow: 1, justifyContent: "center"}}
     >
-      <ScrollView
-        contentContainerStyle={{flexGrow: 1, justifyContent: "center"}}
-        keyboardShouldPersistTaps="handled"
-      >
-        <View className="px-6">
-          <Animated.View entering={FadeInDown.delay(100)}>
-            <Text className="text-3xl font-bold text-gray-900 dark:text-white">
-              Verify Register 👋
-            </Text>
-            <Text className="text-gray-500 mt-2">
-              Verify your email to continue shopping
-            </Text>
-          </Animated.View>
-          <Animated.View entering={FadeInDown.delay(200)} className="mt-6">
-            <AnimatedInput
-              control={control}
-              name="code"
-              label="Verification Code"
-              keyboardType="numeric"
-              autoCapitalize="none"
-              maxLength={6}
-              error={errors.code?.message}
-              setLoading={setLoading}
-            />
-            <AnimatedButton
-              title="Verify"
-              state={loading}
-              onPress={handleSubmit(onSubmit)}
-            />
-          </Animated.View>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+      <View className="px-6">
+        <Animated.View entering={FadeInDown.delay(100)}>
+          <Text className="text-3xl font-bold text-gray-900 dark:text-white">
+            Verify Register 👋
+          </Text>
+          <Text className="text-gray-500 mt-2">
+            Verify your email to continue shopping
+          </Text>
+        </Animated.View>
+        <Animated.View entering={FadeInDown.delay(200)} className="mt-6">
+          <AnimatedInput
+            control={control}
+            name="code"
+            label="Verification Code"
+            keyboardType="numeric"
+            autoCapitalize="none"
+            maxLength={6}
+            error={errors.code?.message}
+            setLoading={setLoading}
+          />
+          <AnimatedButton
+            title="Verify"
+            state={loading}
+            onPress={handleSubmit(onSubmit)}
+          />
+        </Animated.View>
+      </View>
+    </KeyboardAwareScrollView>
   );
 };
 

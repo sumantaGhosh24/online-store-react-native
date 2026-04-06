@@ -3,8 +3,9 @@ import {useMutation, useQuery} from "convex/react";
 import {useLocalSearchParams} from "expo-router";
 import {useCallback, useState} from "react";
 import {useForm} from "react-hook-form";
-import {KeyboardAvoidingView, Platform, ToastAndroid, View} from "react-native";
+import {ToastAndroid, View} from "react-native";
 import Animated, {FadeInDown} from "react-native-reanimated";
+import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 import {z} from "zod";
 
 import AnimatedButton from "@/components/ui/animated-button";
@@ -100,10 +101,7 @@ const UpdateCoupon = () => {
   );
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-      className="flex-1"
-    >
+    <KeyboardAwareScrollView enableOnAndroid={true} extraScrollHeight={20}>
       <View className="px-6">
         <Animated.View entering={FadeInDown.delay(300)} className="mt-6">
           <AnimatedInput
@@ -149,7 +147,7 @@ const UpdateCoupon = () => {
           />
         </Animated.View>
       </View>
-    </KeyboardAvoidingView>
+    </KeyboardAwareScrollView>
   );
 };
 

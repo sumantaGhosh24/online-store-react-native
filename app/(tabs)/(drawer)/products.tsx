@@ -35,7 +35,7 @@ const Products = () => {
   const {results, status, loadMore, isLoading} = usePaginatedQuery(
     api.products.getPaginatedProducts,
     {categoryId: category, searchTitle: debouncedSearch || undefined},
-    {initialNumItems: PAGINATION_MAX_COUNT},
+    {initialNumItems: PAGINATION_MAX_COUNT}
   );
 
   const hasMore = status === "CanLoadMore";
@@ -74,7 +74,7 @@ const Products = () => {
         keyboardShouldPersistTaps="handled"
         removeClippedSubviews={false}
         ListFooterComponent={() =>
-          hasMore && (
+          hasMore ? (
             <TouchableOpacity
               className="bg-primary rounded-full py-3 items-center mb-4 disabled:bg-blue-300 mx-5"
               onPress={() => loadMore(PAGINATION_MAX_COUNT)}
@@ -88,7 +88,7 @@ const Products = () => {
                 </Text>
               )}
             </TouchableOpacity>
-          )
+          ) : null
         }
         ListEmptyComponent={() => (
           <EmptyState

@@ -2,8 +2,6 @@ import {useMutation, useQuery} from "convex/react";
 import {useCallback, useState} from "react";
 import {
   ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
   Text,
   ToastAndroid,
   TouchableOpacity,
@@ -35,7 +33,7 @@ const UpdateProductContent = ({id}: UpdateProductProps) => {
         ToastAndroid.LONG,
         ToastAndroid.BOTTOM,
         25,
-        50
+        50,
       );
 
     try {
@@ -51,7 +49,7 @@ const UpdateProductContent = ({id}: UpdateProductProps) => {
         ToastAndroid.SHORT,
         ToastAndroid.BOTTOM,
         0,
-        100
+        100,
       );
     } catch (error: any) {
       ToastAndroid.showWithGravityAndOffset(
@@ -59,7 +57,7 @@ const UpdateProductContent = ({id}: UpdateProductProps) => {
         ToastAndroid.SHORT,
         ToastAndroid.BOTTOM,
         0,
-        100
+        100,
       );
     } finally {
       setLoading(false);
@@ -67,40 +65,34 @@ const UpdateProductContent = ({id}: UpdateProductProps) => {
   }, [content, id, updateProductContent]);
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      className="mt-5"
-      style={{flex: 1}}
-    >
-      <View style={{flex: 1}}>
-        <Text className="text-2xl font-bold mb-2 dark:text-white">
-          Update Product Content
-        </Text>
-        <View className="bg-white p-3 rounded-md">
-          <Markdown>
-            {content.length > 0
-              ? content
-              : product?.content
-                ? product?.content
-                : "Enter product *content*"}
-          </Markdown>
-        </View>
-        <Editor setContent={setContent} />
-        <TouchableOpacity
-          className="bg-primary rounded-full py-3 items-center mb-4 disabled:bg-blue-300"
-          onPress={handleUpdateProductContent}
-          disabled={loading}
-        >
-          {loading ? (
-            <ActivityIndicator color="white" />
-          ) : (
-            <Text className="text-lg font-medium text-white">
-              Update Product Content
-            </Text>
-          )}
-        </TouchableOpacity>
+    <View style={{flex: 1}}>
+      <Text className="text-2xl font-bold mb-2 dark:text-white">
+        Update Product Content
+      </Text>
+      <View className="bg-white p-3 rounded-md">
+        <Markdown>
+          {content.length > 0
+            ? content
+            : product?.content
+              ? product?.content
+              : "Enter product *content*"}
+        </Markdown>
       </View>
-    </KeyboardAvoidingView>
+      <Editor setContent={setContent} />
+      <TouchableOpacity
+        className="bg-primary rounded-full py-3 items-center mb-10 disabled:bg-blue-300"
+        onPress={handleUpdateProductContent}
+        disabled={loading}
+      >
+        {loading ? (
+          <ActivityIndicator color="white" />
+        ) : (
+          <Text className="text-lg font-medium text-white">
+            Update Product Content
+          </Text>
+        )}
+      </TouchableOpacity>
+    </View>
   );
 };
 

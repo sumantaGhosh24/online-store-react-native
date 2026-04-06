@@ -4,14 +4,9 @@ import {Picker} from "@react-native-picker/picker";
 import {useMutation, useQuery} from "convex/react";
 import {useCallback, useState} from "react";
 import {useForm} from "react-hook-form";
-import {
-  KeyboardAvoidingView,
-  Platform,
-  Text,
-  ToastAndroid,
-  View,
-} from "react-native";
+import {Text, ToastAndroid, View} from "react-native";
 import Animated, {FadeInDown} from "react-native-reanimated";
+import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 import {z} from "zod";
 
 import {api} from "@/convex/_generated/api";
@@ -103,10 +98,7 @@ const UpdateUserInformation = () => {
   );
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-      className="flex-1"
-    >
+    <KeyboardAwareScrollView enableOnAndroid={true} extraScrollHeight={20}>
       <View className="px-6 mt-5">
         <Animated.View entering={FadeInDown.delay(200)} className="mt-6">
           <AnimatedInput
@@ -160,7 +152,7 @@ const UpdateUserInformation = () => {
           />
         </Animated.View>
       </View>
-    </KeyboardAvoidingView>
+    </KeyboardAwareScrollView>
   );
 };
 

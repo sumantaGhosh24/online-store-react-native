@@ -3,13 +3,8 @@ import {Picker} from "@react-native-picker/picker";
 import {useMutation, useQuery} from "convex/react";
 import {useCallback, useMemo, useState} from "react";
 import {useForm} from "react-hook-form";
-import {
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  Text,
-  ToastAndroid,
-} from "react-native";
+import {Text, ToastAndroid, View} from "react-native";
+import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 import {z} from "zod";
 
 import {api} from "@/convex/_generated/api";
@@ -94,7 +89,7 @@ const UpdateProduct = ({id}: UpdateProductProps) => {
           ToastAndroid.LONG,
           ToastAndroid.BOTTOM,
           25,
-          50
+          50,
         );
 
       setLoading("loading");
@@ -116,7 +111,7 @@ const UpdateProduct = ({id}: UpdateProductProps) => {
           ToastAndroid.SHORT,
           ToastAndroid.BOTTOM,
           0,
-          100
+          100,
         );
       } catch (error: any) {
         setLoading("error");
@@ -125,19 +120,16 @@ const UpdateProduct = ({id}: UpdateProductProps) => {
           ToastAndroid.SHORT,
           ToastAndroid.BOTTOM,
           0,
-          100
+          100,
         );
       }
     },
-    [category, id, updateProduct]
+    [category, id, updateProduct],
   );
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      className="px-3 mt-5"
-    >
-      <ScrollView>
+    <KeyboardAwareScrollView enableOnAndroid={true} extraScrollHeight={20}>
+      <View>
         <Text className="text-2xl font-bold mb-5 dark:text-white">
           Update Product
         </Text>
@@ -201,8 +193,8 @@ const UpdateProduct = ({id}: UpdateProductProps) => {
           state={loading}
           onPress={handleSubmit(onSubmit)}
         />
-      </ScrollView>
-    </KeyboardAvoidingView>
+      </View>
+    </KeyboardAwareScrollView>
   );
 };
 
