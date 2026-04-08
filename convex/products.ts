@@ -151,6 +151,7 @@ export const createProduct = mutation({
     title: v.string(),
     price: v.number(),
     description: v.string(),
+    content: v.string(),
     category: v.id("categories"),
     image: v.id("_storage"),
     stock: v.optional(v.number()),
@@ -168,6 +169,7 @@ export const createProduct = mutation({
       user: user._id,
       title: args.title.toLowerCase(),
       description: args.description.toLowerCase(),
+      content: args.content.toLowerCase(),
       price: args.price,
       categoryId: args.category,
       images: [args.image],
@@ -183,6 +185,7 @@ export const updateProduct = mutation({
     title: v.string(),
     price: v.number(),
     description: v.string(),
+    content: v.string(),
     category: v.id("categories"),
     stock: v.optional(v.number()),
     sold: v.optional(v.number()),
@@ -200,29 +203,10 @@ export const updateProduct = mutation({
       title: args.title.toLowerCase(),
       price: args.price,
       description: args.description.toLowerCase(),
+      content: args.content.toLowerCase(),
       categoryId: args.category,
       stock: args.stock,
       sold: args.sold,
-    });
-  },
-});
-
-export const updateProductContent = mutation({
-  args: {
-    id: v.id("products"),
-    content: v.string(),
-  },
-  handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (identity === null) {
-      throw new Error("Unauthenticated call to mutation");
-    }
-
-    const product = await ctx.db.get(args.id);
-    if (!product) throw new Error("Product not found.");
-
-    await ctx.db.patch(args.id, {
-      content: args.content,
     });
   },
 });

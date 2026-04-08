@@ -10,7 +10,6 @@ import {useAppStripe} from "@/components/providers/useAppStripe";
 import {api} from "@/convex/_generated/api";
 import {useCartStore} from "@/store/cart";
 import {Id} from "@/convex/_generated/dataModel";
-import {getApiUrl} from "@/utils/api";
 
 interface FetchPaymentSheetParams {
   customerId?: string;
@@ -40,7 +39,7 @@ async function fetchPaymentSheetParams({
   ephemeralKey: string;
   customer: string;
 }> {
-  return fetch(getApiUrl("/api/payment-sheet"), {
+  return fetch(`${process.env.EXPO_PUBLIC_BASE_URL}/api/payment-sheet`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -96,7 +95,7 @@ async function sendEmail({
   zip,
   addressline,
 }: SendEmailParams) {
-  return fetch(getApiUrl("/api/send-email"), {
+  return fetch(`${process.env.EXPO_PUBLIC_BASE_URL}/api/send-email`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -247,9 +246,10 @@ const Checkout = () => {
 
       removeCoupon();
       clearCart();
-      setLoading(false);
 
       router.push("/cart");
+
+      setLoading(false);
     }
   };
 

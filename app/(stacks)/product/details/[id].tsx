@@ -11,7 +11,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import Markdown from "react-native-markdown-display";
 
 import AddProductReview from "@/components/reviews/add-product-review";
 import ProductReviews from "@/components/reviews/product-reviews";
@@ -47,6 +46,8 @@ const ProductDetails = () => {
       100,
     );
   }, [addProduct, id]);
+
+  if (!product) return null;
 
   return (
     <>
@@ -89,9 +90,7 @@ const ProductDetails = () => {
             ₹{product?.price}
           </Text>
           <Text className="mt-2 dark:text-white">{product?.description}</Text>
-          <View className="bg-white px-1 rounded my-2">
-            <Markdown>{product?.content}</Markdown>
-          </View>
+          <Text className="mt-2 dark:text-white">{product?.content}</Text>
           <View className="flex-row flex-wrap gap-2 mt-3">
             <Text className="bg-primary text-white px-2 py-1 rounded uppercase">
               {product?.category?.name}
@@ -117,7 +116,7 @@ const ProductDetails = () => {
           </View>
           <TouchableOpacity
             onPress={handleAddToCart}
-            className="bg-blue-600 py-3 rounded-xl mt-4 flex-row justify-center"
+            className="bg-blue-600 py-3 rounded-xl mt-4 mb-5 flex-row justify-center"
           >
             <Ionicons name="cart" size={20} color="#fff" />
             <Text className="text-white ml-2">Add to Cart</Text>

@@ -16,6 +16,7 @@ import AnimatedInput from "../ui/animated-input";
 const updateProductSchema = z.object({
   title: z.string().min(2).max(50),
   description: z.string().min(2).max(200),
+  content: z.string().min(2).max(400),
   price: z
     .string()
     .min(1)
@@ -56,6 +57,7 @@ const UpdateProduct = ({id}: UpdateProductProps) => {
     values: {
       title: product?.title || "",
       description: product?.description || "",
+      content: product?.content || "",
       price: String(product?.price) || "0",
       stock: String(product?.stock) || "0",
       sold: String(product?.sold) || "0",
@@ -98,6 +100,7 @@ const UpdateProduct = ({id}: UpdateProductProps) => {
           id: id as Id<"products">,
           title: data.title,
           description: data.description,
+          content: data.content,
           category: category as Id<"categories">,
           price: parseInt(data.price),
           stock: parseInt(data.stock),
@@ -153,6 +156,20 @@ const UpdateProduct = ({id}: UpdateProductProps) => {
           textAlignVertical="top"
           error={errors.title?.message}
           setLoading={setLoading}
+          className="h-[150px]"
+        />
+        <AnimatedInput
+          control={control}
+          name="content"
+          label="Product Content"
+          keyboardType="default"
+          autoCapitalize="none"
+          multiline
+          numberOfLines={10}
+          textAlignVertical="top"
+          error={errors.title?.message}
+          setLoading={setLoading}
+          className="h-[150px]"
         />
         <AnimatedInput
           control={control}
@@ -193,6 +210,7 @@ const UpdateProduct = ({id}: UpdateProductProps) => {
           state={loading}
           onPress={handleSubmit(onSubmit)}
         />
+        <View className="h-[50px]" />
       </View>
     </KeyboardAwareScrollView>
   );

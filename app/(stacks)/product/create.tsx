@@ -24,6 +24,7 @@ import {Id} from "@/convex/_generated/dataModel";
 const createProductSchema = z.object({
   title: z.string().min(2).max(50),
   description: z.string().min(2).max(200),
+  content: z.string().min(2).max(400),
   price: z
     .string()
     .min(1)
@@ -53,6 +54,7 @@ const CreateProduct = () => {
     defaultValues: {
       title: "",
       description: "",
+      content: "",
       price: "0",
       stock: "0",
     },
@@ -162,6 +164,7 @@ const CreateProduct = () => {
         await createProduct({
           title: data.title,
           description: data.description,
+          content: data.content,
           image: storageId,
           category: category as Id<"categories">,
           price: parseInt(data.price),
@@ -257,6 +260,20 @@ const CreateProduct = () => {
             textAlignVertical="top"
             error={errors.title?.message}
             setLoading={setLoading}
+            className="h-[150px]"
+          />
+          <AnimatedInput
+            control={control}
+            name="content"
+            label="Product Content"
+            keyboardType="default"
+            autoCapitalize="none"
+            multiline
+            numberOfLines={10}
+            textAlignVertical="top"
+            error={errors.title?.message}
+            setLoading={setLoading}
+            className="h-[150px]"
           />
           <AnimatedInput
             control={control}
@@ -291,6 +308,7 @@ const CreateProduct = () => {
             state={loading}
             onPress={handleSubmit(onSubmit)}
           />
+          <View className="h-[50px]" />
         </Animated.View>
       </View>
     </KeyboardAwareScrollView>
